@@ -749,7 +749,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/pierre-idrissa-sylva-390a42210" target="_blank" rel="noopener noreferrer">Pierre Idrissa Sylva</a></dd></div>
       <div><dt><span class="en">Location</span><span class="fr">Localisation</span></dt><dd>Lyon, France</dd></div>
     </dl>
-    <form class="contact-form" action="https://formspree.io/f/xaeezjkp" method="POST" accept-charset="UTF-8">
+    <form class="contact-form" action="https://formspree.io/f/xaeezjkp" method="POST" accept-charset="UTF-8" data-endpoint="https://script.google.com/macros/s/AKfycbyjCH1_VXehPFlr4QNEaKHimlVsNUeazLV80501eVp4IFESgAywvd_Iv0pcZaPRongV/exec">
       <h3><span class="en">Send a professional enquiry</span><span class="fr">Envoyer un message professionnel</span></h3>
       <p class="form-intro en">Recruitment opportunity, engineering collaboration or MAIA-PID enquiry? Write to me here.</p>
       <p class="form-intro fr">Offre d'emploi, collaboration technique ou question sur MAIA-PID ? Écrivez-moi ici.</p>
@@ -762,7 +762,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
         <div class="form-field"><label for="contact-type"><span class="en">Subject *</span><span class="fr">Objet *</span></label><select id="contact-type" name="inquiry_type" required><option value="" selected disabled>— Select / Sélectionner —</option><option value="Recruitment / Recrutement">Recruitment / Recrutement</option><option value="Engineering / Collaboration technique">Engineering / Collaboration technique</option><option value="MAIA-PID">MAIA-PID</option><option value="Other / Autre">Other / Autre</option></select></div>
         <div class="form-field full"><label for="contact-message"><span class="en">Message *</span><span class="fr">Message *</span></label><textarea id="contact-message" name="message" minlength="10" maxlength="5000" required></textarea></div>
       </div>
-      <label class="form-consent"><input type="checkbox" name="consent_to_contact" value="yes" required><span><span class="en">I agree to share these details with Pierre Sylva through Formspree so he can reply to my enquiry. *</span><span class="fr">J'accepte de transmettre ces informations à Pierre Sylva via Formspree afin qu'il puisse répondre à mon message. *</span></span></label>
+      <label class="form-consent"><input type="checkbox" name="consent_to_contact" value="yes" required><span><span class="en">I agree to share these details with Pierre Sylva so he can reply to my enquiry, and to receive an acknowledgement email with a copy of my message. *</span><span class="fr">J'accepte de transmettre ces informations à Pierre Sylva afin qu'il puisse répondre à mon message, et de recevoir un accusé de réception par email avec une copie de mon message. *</span></span></label>
       <button class="send-message" type="submit"><span class="en">Send message</span><span class="fr">Envoyer le message</span></button>
       <div class="form-status" id="contact-status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
       <p class="form-footnote en">Required fields are marked *. A confirmation appears here when the message is accepted. You can also email me directly using the address above.</p>
@@ -820,29 +820,60 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       status.hidden=true;
       var buttonOriginal=submitButton.innerHTML;
       submitButton.textContent=root.classList.contains('fr')?'Envoi en cours…':'Sending…';
-      try{
+      var lang=root.classList.contains('fr')?'fr':'en';
+      var endpoint=contactForm.dataset.endpoint||'';
+      var useScript=/^https:\/\/script\.google\.com\//.test(endpoint);
+      async function viaScript(){
+        var fd=new FormData(contactForm);
+        fd.append('lang',lang);
+        var r=await fetch(endpoint,{method:'POST',body:new URLSearchParams(fd)});
+        var data=await r.json();
+        if(data&&data.ok)return data;
+        var err=new Error((data&&data.error)||'script');
+        err.invalid=data&&data.error==='invalid';
+        throw err;
+      }
+      async function viaFormspree(){
         var response=await fetch(contactForm.action,{
           method:'POST',
           body:new FormData(contactForm),
           headers:{'Accept':'application/json'}
         });
-        if(!response.ok){
-          var details='';
-          try{
-            var data=await response.json();
-            if(Array.isArray(data.errors))details=data.errors.map(function(e){return e.message||''}).filter(Boolean).join('; ');
-          }catch(ignore){}
-          throw new Error(details||'HTTP '+response.status);
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        return {ok:true,ack:false};
+      }
+      try{
+        var result;
+        if(useScript){
+          try{result=await viaScript();}
+          catch(scriptError){
+            if(scriptError.invalid)throw scriptError;
+            result=await viaFormspree();
+          }
+        }else{
+          result=await viaFormspree();
         }
         contactForm.reset();
-        showStatus('success',
-          'Your message has been sent successfully. Thank you! I will reply to your email.',
-          'Votre message a bien été envoyé. Merci ! Je vous répondrai par email.');
+        if(result.ack){
+          showStatus('success',
+            'Your message has been sent. An acknowledgement with a copy of your message is on its way to your inbox (check your spam folder if needed).',
+            'Votre message a bien été envoyé. Un accusé de réception avec une copie de votre message arrive dans votre boîte email (pensez à vérifier les indésirables).');
+        }else{
+          showStatus('success',
+            'Your message has been sent successfully. Thank you! I will reply to your email.',
+            'Votre message a bien été envoyé. Merci ! Je vous répondrai par email.');
+        }
         status.scrollIntoView({behavior:'smooth',block:'nearest'});
       }catch(error){
-        showStatus('error',
-          'The message could not be sent. Your entries are still here. Please try again or use the email link above.',
-          "L'envoi du message a échoué. Vos informations sont conservées. Réessayez ou utilisez le lien email ci-dessus.");
+        if(error&&error.invalid){
+          showStatus('error',
+            'Some fields are not valid. Please check your email address and the required fields, then try again.',
+            "Certains champs ne sont pas valides. Vérifiez votre adresse email et les champs obligatoires, puis réessayez.");
+        }else{
+          showStatus('error',
+            'The message could not be sent. Your entries are still here. Please try again or use the email link above.',
+            "L'envoi du message a échoué. Vos informations sont conservées. Réessayez ou utilisez le lien email ci-dessus.");
+        }
       }finally{
         isSending=false;
         submitButton.disabled=false;
