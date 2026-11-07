@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html class="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pierre Sylva Workshop</title>
+<meta name="description" content="Interactive workshop by Pierre Sylva: an over-centre mechanism, a lifting feasibility check, a clash hunt between disciplines and an automated data check.">
+<meta name="author" content="Pierre Sylva">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Pierre Sylva · Mechanical design, nuclear plant layout, industrial AI">
+<meta property="og:description" content="From parts machined to 0.01 mm to an engine that checks P&amp;IDs. EPR2, Hinkley Point C, MAIA-PID.">
+<meta property="og:image" content="https://pedy99-ia.github.io/media/og-image.jpg">
+<meta property="og:url" content="https://pedy99-ia.github.io/atelier.html">
+<link rel="canonical" href="https://pedy99-ia.github.io/atelier.html">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2315191D'/%3E%3Crect x='5' y='5' width='54' height='54' fill='none' stroke='%237FA2FF' stroke-width='3'/%3E%3Ctext x='32' y='42' font-family='Arial Narrow,Arial' font-weight='700' font-size='26' fill='%23F2F3F0' text-anchor='middle'%3EPS%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Instrument+Sans:wght@400..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: an engineering drawing set. Each section is a numbered folio with a title block, dimension lines carry the career story. */
+:root{
+  --paper:#F2F3F0;
+  --sheet:#FBFBF9;
+  --ink:#15191D;
+  --muted:#5B636B;
+  --line:#C9CDD0;
+  --accent:#2350C8;
+  --accent-soft:#E3E9F8;
+  --amber:#9A6412;
+  --amber-soft:#F6EBD6;
+  --ok:#2F7A4E;
+  --ok-soft:#E0F0E6;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif;
+  --body:"Instrument Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1217;--sheet:#131A21;--ink:#E6EAED;--muted:#97A1AA;--line:#2A343E;
+    --accent:#7FA2FF;--accent-soft:#1B2847;--amber:#E0AE5C;--amber-soft:#33281A;--ok:#6CC892;--ok-soft:#16301F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1217;--sheet:#131A21;--ink:#E6EAED;--muted:#97A1AA;--line:#2A343E;
+  --accent:#7FA2FF;--accent-soft:#1B2847;--amber:#E0AE5C;--amber-soft:#33281A;--ok:#6CC892;--ok-soft:#16301F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6}
+html.en .fr, html.fr .en{display:none!important}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.08}
+.mono{font-family:var(--mono);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+@media (max-width:480px){.wrap{padding:0 16px}}
+
+/* Top bar */
+header.bar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.mark{font-family:var(--display);font-weight:800;font-stretch:125%;font-size:1rem;letter-spacing:.02em;text-decoration:none;color:var(--ink);white-space:nowrap}
+.mark span{color:var(--accent)}
+nav.links{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}
+nav.links a{color:var(--muted);text-decoration:none;font-size:.9rem}
+nav.links a:hover{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;flex:none}
+.lang button{font-family:var(--mono);font-size:.75rem;background:none;border:0;color:var(--muted);padding:6px 10px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.menu-btn,.m-only{display:none}
+@media (max-width:820px){
+.bar .wrap{flex-wrap:wrap;height:auto;min-height:60px;align-content:center;column-gap:10px}
+.menu-btn{display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-family:var(--mono);font-size:.8rem;background:none;border:1px solid var(--line);border-radius:4px;color:var(--ink);padding:6px 12px;cursor:pointer}
+.menu-btn .ic{font-size:1rem;line-height:1}
+.lang{margin-left:0}
+nav.links{display:none;order:3;flex-basis:100%;margin:0;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:0;padding:6px 0 14px}
+header.bar.open nav.links{display:grid}
+header.bar.open .wrap{padding-top:12px}
+nav.links a{padding:13px 2px;border-top:1px solid var(--line);font-size:1rem;color:var(--ink)}
+nav.links a.m-only{display:block}
+nav.links a[aria-current="page"]{color:var(--accent)}
+}
+.totop{position:fixed;right:16px;bottom:18px;width:46px;height:46px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:1.2rem;border:0;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.totop.show{opacity:.92;pointer-events:auto}
+
+/* Hero */
+.hero{border-bottom:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;background-position:-1px -1px}
+.hero .wrap{display:grid;grid-template-columns:1.45fr 1fr;gap:48px;padding-top:64px;padding-bottom:56px;align-items:end}
+.hero-main{background:var(--paper);padding:8px 8px 8px 0}
+.eyebrow{color:var(--accent);margin-bottom:18px}
+.hero h1{font-size:clamp(2.3rem,5.4vw,4.4rem);font-weight:780;font-stretch:72%;letter-spacing:-.01em;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lead{max-width:60ch;color:var(--muted);margin:22px 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:600;font-size:.95rem;padding:11px 18px;border-radius:4px;text-decoration:none;border:1px solid var(--ink);color:var(--ink);background:var(--sheet);cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:hover{transform:translateY(-1px)}
+
+/* Title block (cartouche) */
+.cartouche{background:var(--sheet);border:2px solid var(--ink);font-size:.88rem}
+.cartouche .row{display:grid;grid-template-columns:118px 1fr;border-top:1px solid var(--ink)}
+.cartouche .row:first-child{border-top:0}
+.cartouche .k{padding:8px 10px;border-right:1px solid var(--ink);font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.cartouche .v{padding:8px 12px}
+.cartouche .name{font-family:var(--display);font-weight:800;font-stretch:115%;font-size:1.25rem;line-height:1.2}
+.cartouche .split{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+.cartouche .split div{padding:8px 10px;border-left:1px solid var(--ink)}
+.cartouche .split div:first-child{border-left:0}
+.cartouche .split b{display:block;font-family:var(--mono);font-weight:500;font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:32px;padding-top:40px}}
+
+/* Progression with dimension line */
+.progress{padding:56px 0 24px}
+.dim{position:relative;height:28px;margin:0 0 24px}
+.dim::before{content:"";position:absolute;left:0;right:0;top:13px;border-top:1px solid var(--accent);transform-origin:left;animation:draw 1.2s ease-out .2s both}
+.dim::after{content:"";position:absolute;left:0;right:0;top:5px;height:17px;border-left:1px solid var(--accent);border-right:1px solid var(--accent)}
+.dim span{position:absolute;left:50%;top:0;transform:translateX(-50%);background:var(--paper);padding:0 10px;color:var(--accent)}
+@keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.stages{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--sheet)}
+.stage{padding:22px 22px 24px;border-left:1px solid var(--line);position:relative}
+.stage:first-child{border-left:0}
+.stage .scale{font-family:var(--display);font-weight:780;font-stretch:68%;font-size:2.4rem;line-height:1;color:var(--ink)}
+.stage .scale small{font-size:1rem;font-stretch:100%;color:var(--muted);font-weight:600;margin-left:4px}
+.stage h3{font-size:1.05rem;font-weight:700;margin:12px 0 6px}
+.stage p{margin:0;color:var(--muted);font-size:.93rem}
+.stage .when{position:absolute;top:22px;right:22px;color:var(--muted)}
+.stage:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:24px;height:24px;display:grid;place-items:center;background:var(--accent);color:#fff;border-radius:50%;font-size:.8rem;z-index:2}
+@media (max-width:760px){.stages{grid-template-columns:1fr}.stage{border-left:0;border-top:1px solid var(--line)}.stage:first-child{border-top:0}.stage:not(:last-child)::after{right:auto;left:22px;top:auto;bottom:-12px;transform:rotate(90deg)}}
+
+.figures{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:24px 0 0;border-top:1px solid var(--line)}
+.fig{padding:18px 18px 4px 0}
+.fig b{display:block;font-family:var(--display);font-weight:760;font-stretch:80%;font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.fig span{color:var(--muted);font-size:.88rem;display:block}
+@media (max-width:760px){.figures{grid-template-columns:repeat(2,1fr)}}
+
+/* Folios */
+section.folio{padding:72px 0 8px}
+.folio-head{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:28px}
+.folio-num{font-family:var(--display);font-weight:800;font-stretch:62%;font-size:4.2rem;line-height:.8;color:var(--accent)}
+.folio-head h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:760;font-stretch:85%}
+.folio-head .meta{color:var(--muted);margin-top:6px;font-family:var(--body);font-size:.95rem}
+.folio-head .sheet{color:var(--muted);text-align:right;white-space:nowrap}
+@media (max-width:640px){.folio-head{grid-template-columns:auto 1fr}.folio-head .sheet{display:none}.folio-num{font-size:3.2rem}}
+.intro{max-width:72ch;margin:0 0 28px;font-size:1.05rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 28px;padding:0;list-style:none}
+.tags li{font-family:var(--mono);font-size:.74rem;border:1px solid var(--line);background:var(--sheet);padding:3px 8px;border-radius:3px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{background:var(--sheet);border:1px solid var(--line);padding:22px 24px}
+.card h3{font-size:1.12rem;font-weight:700;font-stretch:95%;margin-bottom:10px}
+.card ul{margin:0;padding-left:18px}
+.card li{margin:4px 0;font-size:.95rem}
+.card li::marker{color:var(--accent)}
+.note{border-left:3px solid var(--accent);padding:10px 16px;background:var(--accent-soft);margin:22px 0 0;font-size:.95rem;max-width:80ch}
+.note.amber{border-color:var(--amber);background:var(--amber-soft)}
+
+.videos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:20px}
+.videos figure{margin:0;background:var(--sheet);border:1px solid var(--line);padding:12px}
+.videos video{display:block;width:100%;aspect-ratio:540/740;object-fit:cover;background:#000;border:1px solid var(--ink)}
+.videos figcaption{display:grid;gap:4px;padding:10px 2px 2px;font-size:.9rem;color:var(--muted)}
+.videos figcaption .mono{color:var(--accent)}
+@media (max-width:640px){.videos{grid-template-columns:1fr}}
+.wide-video{margin:20px 0 0;background:var(--sheet);border:1px solid var(--line);padding:12px}
+.wide-video video{display:block;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--ink)}
+.wide-video figcaption{display:grid;gap:4px;padding:10px 2px 2px;font-size:.9rem;color:var(--muted)}
+.wide-video figcaption .mono{color:var(--accent)}
+.full-defence{margin:0 0 20px}
+.full-defence summary{cursor:pointer;font-weight:600;color:var(--accent);padding:6px 0;width:fit-content}
+.proofs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:28px}
+.proofs figure{margin:0;background:var(--sheet);border:1px solid var(--line);padding:12px}
+.proofs button{display:block;width:100%;padding:0;border:1px solid var(--line);background:none;cursor:zoom-in}
+.proofs img{display:block;width:100%;height:auto}
+.proofs figcaption{display:grid;gap:4px;padding:10px 2px 2px;font-size:.9rem;color:var(--muted)}
+.proofs figcaption .mono{color:var(--accent)}
+@media (max-width:700px){.proofs{grid-template-columns:1fr}}
+dialog#viewer{border:0;padding:0;max-width:min(96vw,1000px);background:var(--sheet)}
+dialog#viewer::backdrop{background:rgba(10,14,18,.82)}
+dialog#viewer img{display:block;max-width:100%;max-height:86vh}
+dialog#viewer button{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:.75rem;background:var(--ink);color:var(--paper);border:0;padding:6px 10px;border-radius:3px;cursor:pointer}
+
+/* MAIA pipeline */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:8px 0 28px;counter-reset:s}
+.step{border:1px solid var(--ink);border-left-width:0;padding:16px 16px 18px;background:var(--sheet);position:relative}
+.step:first-child{border-left-width:1px}
+.step .n{font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+.step h3{font-size:1rem;font-weight:720;margin:6px 0 6px}
+.step p{margin:0;font-size:.87rem;color:var(--muted);line-height:1.5}
+@media (max-width:900px){.pipeline{grid-template-columns:1fr}.step{border-left-width:1px;border-top-width:0}.step:first-child{border-top-width:1px}}
+table.status{width:100%;border-collapse:collapse;background:var(--sheet);border:1px solid var(--line);font-size:.93rem}
+table.status th,table.status td{text-align:left;padding:11px 14px;border-top:1px solid var(--line);vertical-align:top}
+table.status th{font-family:var(--mono);font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-top:0}
+table.status td:first-child{font-family:var(--mono);font-size:.82rem;white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.dev{background:var(--amber-soft);color:var(--amber)}
+.tablewrap{overflow-x:auto}
+
+/* Timeline */
+.timeline{list-style:none;margin:0;padding:0;border-left:1px solid var(--ink)}
+.timeline li{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:16px 0 16px 22px;border-bottom:1px solid var(--line);position:relative}
+.timeline li::before{content:"";position:absolute;left:-5px;top:24px;width:9px;height:9px;background:var(--paper);border:1px solid var(--ink)}
+.timeline li.planned::before{border-style:dashed;border-color:var(--amber)}
+.timeline .y{font-family:var(--mono);font-size:.82rem;color:var(--muted);padding-top:3px;font-variant-numeric:tabular-nums}
+.timeline h3{font-size:1.05rem;font-weight:700}
+.timeline p{margin:4px 0 0;color:var(--muted);font-size:.93rem}
+@media (max-width:600px){.timeline li{grid-template-columns:1fr;gap:2px}}
+
+/* Contact */
+.contact{margin:80px 0 0;background:var(--ink);color:var(--paper)}
+.contact .wrap{padding-top:56px;padding-bottom:56px;display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center}
+.contact h2{font-size:clamp(1.8rem,3.6vw,2.8rem);font-weight:780;font-stretch:75%;text-transform:uppercase}
+.contact p{color:color-mix(in srgb,var(--paper) 75%,transparent);max-width:60ch}
+.contact dl{margin:0;display:grid;gap:14px}
+.contact dt{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;opacity:.7}
+.contact dd{margin:2px 0 0;font-size:1.1rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.contact dd a{color:var(--paper)}
+.copy{font-family:var(--mono);font-size:.7rem;background:none;border:1px solid color-mix(in srgb,var(--paper) 40%,transparent);color:var(--paper);padding:3px 8px;border-radius:3px;cursor:pointer}
+@media (max-width:800px){.contact .wrap{grid-template-columns:1fr}}
+/* Bilingual recruiter contact form — Formspree endpoint */
+.contact-form{grid-column:1/-1;border-top:1px solid color-mix(in srgb,var(--paper) 30%,transparent);padding-top:28px;max-width:850px;width:100%}
+.contact-form h3{font-size:1.3rem;margin-bottom:6px}
+.contact-form .form-intro{margin:0 0 20px;font-size:.95rem}
+.contact-form .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.contact-form .form-field{display:flex;flex-direction:column;gap:6px}
+.contact-form .form-field.full{grid-column:1/-1}
+.contact-form label{font-size:.88rem;font-weight:600}
+.contact-form input:not([type="checkbox"]),.contact-form select,.contact-form textarea{width:100%;min-width:0;border:1px solid color-mix(in srgb,var(--paper) 50%,transparent);border-radius:5px;padding:11px 12px;background:var(--sheet);color:var(--ink);font:inherit;font-size:.95rem}
+.contact-form textarea{min-height:135px;resize:vertical}
+.contact-form input:focus-visible,.contact-form select:focus-visible,.contact-form textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.contact-form .form-consent{display:flex;gap:10px;align-items:flex-start;font-size:.84rem;line-height:1.5;margin:16px 0}
+.contact-form .form-consent input{margin-top:5px;flex-shrink:0}
+.contact-form .send-message{border:1px solid var(--paper);border-radius:4px;background:var(--paper);color:var(--ink);font:600 .95rem var(--body);padding:11px 22px;cursor:pointer}
+.contact-form .send-message:hover{opacity:.87}
+.contact-form .form-footnote{font-size:.8rem;margin:10px 0 0}
+.contact-form .form-status{margin-top:16px;padding:13px 16px;border-radius:5px;font-size:.95rem;line-height:1.5;border:1px solid var(--paper)}
+.contact-form .form-status[hidden]{display:none}
+.contact-form .form-status[data-state="success"]{border-color:#80caa0;color:#d9f8e5;background:#163c2c}
+.contact-form .form-status[data-state="error"]{border-color:#e4a8a8;color:#ffe4e4;background:#502929}
+.contact-form .send-message:disabled{opacity:.55;cursor:wait}
+
+.contact-form .hp-field{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+@media (max-width:600px){.contact-form .form-grid{grid-template-columns:1fr}}
+
+footer{padding:22px 0 40px;color:var(--muted);font-size:.85rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* ---------- Atelier ---------- */
+.at-hero{border-bottom:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;background-position:-1px -1px}
+.at-hero .wrap{padding-top:56px;padding-bottom:48px}
+.at-hero .eyebrow{color:var(--accent);margin-bottom:14px}
+.at-hero h1{font-size:clamp(2.1rem,5vw,3.8rem);font-weight:780;font-stretch:72%;text-transform:uppercase;background:var(--paper);display:inline-block;padding-right:8px}
+.at-hero .lead{max-width:66ch;color:var(--muted);margin:18px 0 28px;background:var(--paper)}
+.at-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border:1px solid var(--ink);background:var(--sheet)}
+.at-card{display:flex;flex-direction:column;gap:6px;padding:18px 18px 20px;border-left:1px solid var(--ink);text-decoration:none;color:var(--ink);transition:background .15s}
+.at-card:first-child{border-left:0}
+.at-card:hover{background:var(--accent-soft)}
+.at-card .mono{color:var(--accent)}
+.at-card b{font-family:var(--display);font-size:1.25rem;font-stretch:85%;line-height:1.1}
+.at-card>span:not(.mono){font-size:.9rem;color:var(--muted)}
+@media (max-width:860px){.at-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.at-card:nth-child(3){border-left:0}.at-card:nth-child(n+3){border-top:1px solid var(--ink)}}
+@media (max-width:480px){.at-cards{grid-template-columns:1fr}.at-card{border-left:0;border-top:1px solid var(--ink)}.at-card:first-child{border-top:0}}
+
+.at-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:24px;align-items:start}
+.at-grid.wide{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+@media (max-width:900px){.at-grid,.at-grid.wide{grid-template-columns:1fr}}
+.at-stage{margin:0;background:var(--sheet);border:1px solid var(--line);padding:14px}
+.at-stage svg{display:block;width:100%;height:auto;background:var(--paper);border:1px solid var(--line)}
+.at-side{display:grid;gap:16px}
+.at-small{font-size:.85rem;color:var(--muted)}
+.at-controls{display:grid;gap:10px;padding-top:12px}
+.at-controls label{font-size:.88rem;font-weight:600}
+.at-controls input[type=range]{width:100%;accent-color:var(--accent)}
+.at-btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:10px}
+.at-state,.at-verdict{border:1px solid var(--line);border-left-width:4px;padding:12px 14px;background:var(--sheet);font-size:.95rem;min-height:3.2em}
+.at-state b,.at-verdict b{display:block;font-family:var(--display);font-size:1.1rem;font-stretch:90%}
+[data-tone="ok"]{border-left-color:var(--ok)!important}
+[data-tone="ok"] b{color:var(--ok)}
+[data-tone="warn"]{border-left-color:var(--amber)!important}
+[data-tone="warn"] b{color:var(--amber)}
+[data-tone="bad"]{border-left-color:#C2413A!important}
+[data-tone="bad"] b{color:#C2413A}
+.at-readout{font-size:.75rem;color:var(--muted)}
+
+/* mechanism */
+.m-ground{stroke:var(--ink);stroke-width:2}
+.m-body{fill:var(--sheet);stroke:var(--ink);stroke-width:2}
+.m-wheel{fill:var(--paper);stroke:var(--ink);stroke-width:2}
+.m-frame{fill:var(--line);stroke:var(--ink);stroke-width:1.5}
+.m-foot{fill:var(--ink)}
+.m-dead{stroke:var(--accent);stroke-width:1;stroke-dasharray:5 5}
+.m-label{font-family:var(--mono);font-size:11px;fill:var(--accent)}
+.m-stop{fill:var(--amber);stroke:var(--ink);stroke-width:1}
+.m-plate{fill:var(--accent);stroke:var(--ink);stroke-width:1.5}
+.m-castor{fill:var(--sheet);stroke:var(--ink);stroke-width:2.5}
+.m-rod{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.m-crank{stroke:var(--accent);stroke-width:9;stroke-linecap:round}
+.m-pin{fill:var(--paper);stroke:var(--ink);stroke-width:2}
+.m-pin-fixed{fill:var(--ink)}
+.m-force{stroke:#C2413A;stroke-width:3}
+.m-force-head{fill:#C2413A}
+
+/* lift form */
+.at-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:600px){.at-form{grid-template-columns:1fr}}
+.at-form fieldset{border:1px solid var(--line);background:var(--sheet);padding:12px 14px 16px;margin:0;display:grid;gap:4px;align-content:start}
+.at-form legend{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);padding:0 6px}
+.at-form label{font-size:.84rem;margin-top:6px}
+.at-form input{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);width:100%}
+.at-form input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.at-presets,.at-rules,.at-layers{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.at-presets .mono,.at-rules .mono,.at-layers .mono{font-size:.72rem;color:var(--muted)}
+.chip{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:5px 12px;border-radius:999px;cursor:pointer}
+.chip:hover,.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.chip.static{cursor:default;font-size:.8rem}
+.at-checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.at-checks li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:.92rem;background:var(--sheet);border:1px solid var(--line);padding:8px 10px}
+.at-checks .dot{width:12px;height:12px;border-radius:50%;margin-top:6px}
+.dot.ok{background:var(--ok)}.dot.warn{background:var(--amber)}.dot.bad{background:#C2413A}
+
+/* clash */
+.at-layers label{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer}
+.sw{width:12px;height:12px;display:inline-block;border:1px solid var(--ink)}
+.sw-gc,.c-gc{fill:#9AA1A8;background:#9AA1A8}
+.sw-cdc{background:#D4881F}.c-cdc{fill:#D4881F;stroke:var(--ink);stroke-width:1}
+.sw-hvac{background:#5BA7C9}.c-hvac{fill:#5BA7C9;fill-opacity:.55;stroke:#2F6F8C;stroke-width:2}
+.sw-pip{background:#3A8F5C}.c-pip{stroke:#3A8F5C;stroke-width:10;stroke-linecap:round}
+.c-pip-thin{stroke:#3A8F5C;stroke-width:3}
+.c-valve{fill:#3A8F5C;stroke:var(--ink);stroke-width:1}
+.sw-cm{background:#7A4FB0}.c-cm{fill:#7A4FB0;stroke:var(--ink);stroke-width:1}.c-cm-l{stroke:#7A4FB0;stroke-width:4}
+.c-bg{fill:var(--paper)}
+.c-tag{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.c-hit{fill:transparent;stroke:transparent;stroke-width:3;cursor:pointer}
+.c-hit:hover{stroke:var(--line)}
+.c-hit.found{fill:rgba(194,65,58,.12);stroke:#C2413A;stroke-dasharray:4 3;cursor:default}
+.c-hit.hint{stroke:var(--accent);animation:pulse 1s ease-in-out 2}
+@keyframes pulse{50%{stroke-width:8}}
+.at-found{margin:0;padding-left:20px;display:grid;gap:10px}
+.at-found li{background:var(--sheet);border:1px solid var(--line);padding:10px 12px;font-size:.92rem}
+.at-found li b{display:block;color:#C2413A;font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+
+/* automation */
+.at-tablewrap{max-height:440px;overflow:auto;border:1px solid var(--line)}
+.at-table{border:0}
+.at-table td{padding:6px 12px;font-size:.86rem}
+.at-table td:first-child{color:var(--muted)}
+.at-table tr.checking td{background:var(--accent-soft)}
+.at-table tr.bad td{background:rgba(194,65,58,.1)}
+.at-table .res-ok{color:var(--ok);font-family:var(--mono);font-size:.75rem}
+.at-table .res-bad{color:#C2413A;font-family:var(--mono);font-size:.75rem}
+
+/* A2 explicite */
+.lift-intro{max-width:78ch;margin:0 0 20px}
+.lift-intro p{margin:0}
+.lift-story{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;margin:0 0 18px;font-size:.98rem;max-width:80ch}
+.lift-step{font-size:.72rem;color:var(--muted)}
+.lift-legend{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:8px 0 0}
+.lift-legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px 0 8px}
+#lift-form{margin-top:16px}
+.at-form .hint{font-size:.76rem;color:var(--muted);line-height:1.35}
+.lift-checks{list-style:none;counter-reset:lc;margin:0;padding:0;display:grid;gap:10px}
+.lift-checks li{counter-increment:lc;display:grid;gap:4px;background:var(--sheet);border:1px solid var(--line);border-left-width:4px;padding:10px 12px 10px 12px}
+.lift-checks li b::before{content:counter(lc) ". ";color:var(--accent);font-family:var(--mono)}
+.lift-checks li b{font-family:var(--display);font-stretch:90%;font-size:1.02rem}
+.lift-calc{text-transform:none;letter-spacing:0;font-size:.8rem;background:var(--paper);border:1px dashed var(--line);padding:4px 8px;border-radius:3px;overflow-wrap:anywhere}
+.lift-res{font-size:.92rem;display:flex;gap:6px;align-items:baseline}
+.lift-res .dot{flex:none;width:10px;height:10px;border-radius:50%;display:inline-block}
+.l-cap{font-family:var(--mono);font-size:10px;fill:var(--muted);letter-spacing:.06em}
+.l-beam{fill:var(--line);stroke:var(--ink);stroke-width:1.5}
+.l-hoist{fill:var(--sheet);stroke:var(--ink);stroke-width:1.5}
+.l-floor{stroke:var(--ink);stroke-width:2}
+.l-sling{stroke:var(--muted);stroke-width:1.5}
+.l-load{fill:var(--sheet);stroke-width:2.5}
+.l-hook{fill:none;stroke:var(--ink);stroke-width:2.5}
+.l-dash{stroke:var(--accent);stroke-width:1;stroke-dasharray:5 4}
+.l-dim{stroke-width:1.5}
+.l-txt{font-family:var(--mono);font-size:11px;fill:var(--ink)}
+.l-mini{font-family:var(--mono);font-size:9.5px;fill:var(--muted)}
+.l-over{fill:rgba(194,65,58,.35)}
+.l-wall{fill:#9AA1A8;stroke:var(--ink);stroke-width:1}
+.l-arrow{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3}
+.l-arrowhead{fill:var(--muted)}
+.l-gauge{fill:var(--paper);stroke:var(--line);stroke-width:1}
+.l-mark{stroke:var(--amber);stroke-width:1.5}
+.l-mark.strong{stroke:#C2413A;stroke-width:2}
+
+/* A4 données */
+.codif{display:grid;gap:8px;background:var(--sheet);border:1px solid var(--line);padding:14px 16px;margin:0 0 20px;max-width:640px}
+.codif .mono{font-size:.72rem;color:var(--muted)}
+.codif-row{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap}
+.codif-part{display:grid;justify-items:center;border:1px solid var(--accent);background:var(--accent-soft);padding:4px 10px;border-radius:3px}
+.codif-part b{font-family:var(--mono);font-size:1.05rem}
+.codif-part small{font-size:.7rem;color:var(--muted)}
+.codif-sep{font-family:var(--mono);font-size:1.2rem;padding-top:4px}
+.auto-steps{list-style:none;counter-reset:st;margin:0;padding:0;display:grid;gap:8px}
+.auto-steps li{counter-increment:st;display:grid;gap:2px;border:1px solid var(--line);border-left-width:4px;background:var(--sheet);padding:8px 12px;font-size:.88rem;color:var(--muted);transition:border-color .2s,background .2s}
+.auto-steps li b{color:var(--ink);font-family:var(--display);font-stretch:90%;font-size:.98rem}
+.auto-steps li b::before{content:counter(st) ". ";color:var(--accent);font-family:var(--mono)}
+.auto-steps li[data-state="run"]{border-left-color:var(--accent);background:var(--accent-soft)}
+.auto-steps li[data-state="done"]{border-left-color:var(--ok)}
+.auto-steps li[data-state="done"] b::after{content:"  ✓";color:var(--ok)}
+.auto-tw{margin-top:20px;max-height:none}
+.at-table td.res{font-size:.8rem}
+.at-table tr.t-ok td.res{color:var(--ok)}
+.at-table tr.t-warn td{background:var(--amber-soft)}
+.at-table tr.t-warn td.res{color:var(--amber)}
+.at-table tr.t-bad td{background:rgba(194,65,58,.1)}
+.a-room{fill-opacity:.12}
+.a-room-0{fill:#2350C8}.a-room-1{fill:#3A8F5C}
+.a-room-lbl{font-family:var(--mono);font-size:12px;fill:var(--ink);font-weight:500}
+.c-pip-r{fill:#3A8F5C}
+.a-clash{fill:rgba(194,65,58,.15);stroke:#C2413A;stroke-width:2.5;stroke-dasharray:4 3}
+.a-open{fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:2 3}
+#auto-clashes{margin-top:16px;list-style:none;padding-left:0}
+#auto-table td:nth-child(7),#auto-table td:nth-child(1){white-space:nowrap}
+#auto-clashes li.ok b{color:var(--ok)}
+
+/* lexique */
+a.term{color:inherit;text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:3px;cursor:help}
+a.term:hover,a.term:focus-visible{color:var(--accent)}
+.term-demo{text-decoration:underline dotted var(--accent);text-decoration-thickness:2px;text-underline-offset:3px;color:inherit}
+.lex-hint{font-size:.92rem;margin:0 0 4px;background:var(--paper);display:inline-block;padding:2px 6px 2px 0}
+#term-pop{position:absolute;z-index:50;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:4px;font-size:.86rem;line-height:1.45;box-shadow:0 6px 20px rgba(0,0,0,.2);display:grid;gap:4px;pointer-events:none}
+#term-pop[hidden]{display:none}
+#term-pop b{font-family:var(--display);font-size:1rem}
+#term-pop em{font-size:.75rem;opacity:.7;font-style:normal}
+.lex-search{display:grid;gap:4px;max-width:360px;font-size:.85rem;font-weight:600;margin:0 0 18px}
+.lex-search input{font:inherit;font-weight:400;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sheet);color:var(--ink)}
+.lex-group{font-family:var(--mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:22px 0 10px}
+.lex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.lex-entry{background:var(--sheet);border:1px solid var(--line);padding:14px 16px;scroll-margin-top:80px}
+.lex-entry:target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.lex-entry h4{margin:0 0 6px;font-family:var(--display);font-size:1.08rem;font-stretch:90%;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.lex-tr{font-family:var(--mono);font-size:.72rem;color:var(--muted);font-weight:400}
+.lex-entry p{margin:4px 0;font-size:.9rem}
+.lex-entry p b{font-weight:600}
+.lex-ref{color:var(--muted);font-size:.82rem!important}
+.role-note{margin-top:18px;border-left:3px solid var(--accent);padding:10px 16px;background:var(--accent-soft);max-width:82ch}
+.role-note p{margin:4px 0}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="index.html">P<span>.</span>SYLVA</a>
+    <nav class="links" id="site-nav" aria-label="Sections">
+      <a class="m-only" href="index.html"><span class="en">← Home</span><span class="fr">← Accueil</span></a>
+      <a class="m-only" href="#concevoir"><span class="en">A1 · Design</span><span class="fr">A1 · Concevoir</span></a>
+      <a class="m-only" href="#faisabilite"><span class="en">A2 · Feasibility</span><span class="fr">A2 · Faisabilité</span></a>
+      <a class="m-only" href="#interfaces"><span class="en">A3 · Clash hunt</span><span class="fr">A3 · Conflits</span></a>
+      <a class="m-only" href="#automatiser"><span class="en">A4 · Automation</span><span class="fr">A4 · Automatiser</span></a>
+      <a href="index.html#edvance"><span class="en">Experience</span><span class="fr">Expériences</span></a>
+      <a href="#lexique"><span class="en">Glossary</span><span class="fr">Lexique</span></a>
+      <a href="atelier.html" aria-current="page"><span class="en">Workshop</span><span class="fr">Atelier</span></a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav"><span class="ic" aria-hidden="true">☰</span>Menu</button>
+    <div class="lang" role="group" aria-label="Language">
+      <button id="btn-en" type="button" data-set="en" aria-pressed="true">EN</button>
+      <button id="btn-fr" type="button" data-set="fr" aria-pressed="false">FR</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="at-hero">
+  <div class="wrap">
+    <div class="eyebrow mono"><span class="en">Workshop · interactive</span><span class="fr">Atelier · interactif</span></div>
+    <h1 class="en">Four ways to see how I work</h1>
+    <h1 class="fr">Quatre façons de voir comment je travaille</h1>
+    <p class="lead en">A CV lists skills. Here you can try them. Each module below puts you in my place for a minute: design a mechanism, judge feasibility, hunt for clashes between disciplines, and let a script do the checking.</p>
+    <p class="lead fr">Un CV liste des compétences. Ici, vous pouvez les essayer. Chaque module vous met une minute à ma place : concevoir un mécanisme, juger une faisabilité, traquer les conflits entre disciplines, puis laisser un script faire les contrôles.</p>
+    <div class="at-cards">
+      <a class="at-card" href="#concevoir"><span class="mono">A1</span><b><span class="en">Design</span><span class="fr">Concevoir</span></b><span class="en">Move the over-centre mechanism of my mobile grinder base.</span><span class="fr">Manipulez le mécanisme à point mort de mon socle de touret mobile.</span></a>
+      <a class="at-card" href="#faisabilite"><span class="mono">A2</span><b><span class="en">Judge feasibility</span><span class="fr">Sentir la faisabilité</span></b><span class="en">Check a lift before anyone draws it.</span><span class="fr">Vérifiez un levage avant même de le dessiner.</span></a>
+      <a class="at-card" href="#interfaces"><span class="mono">A3</span><b><span class="en">Bridge disciplines</span><span class="fr">Relier les disciplines</span></b><span class="en">Find the 3 clashes hidden in a section view.</span><span class="fr">Trouvez les 3 conflits cachés dans une coupe.</span></a>
+      <a class="at-card" href="#automatiser"><span class="mono">A4</span><b><span class="en">Automate</span><span class="fr">Automatiser</span></b><span class="en">Watch a script locate, fill in and cross-check the objects from A3.</span><span class="fr">Regardez un script localiser, compléter et recouper les objets du module A3.</span></a>
+    </div>
+    <p class="lex-hint en">A technical word you don't know? Hover or tap the <a class="term-demo" href="#lexique">underlined words</a>, or open the <a href="#lexique">glossary</a> at the bottom of the page.</p>
+    <p class="lex-hint fr">Un mot technique vous échappe ? Survolez ou touchez les <a class="term-demo" href="#lexique">mots soulignés</a>, ou ouvrez le <a href="#lexique">lexique</a> en bas de page.</p>
+    <p class="note amber en" style="margin-top:28px">All examples on this page are invented for teaching purposes. None of them comes from a real project or client.</p>
+    <p class="note amber fr" style="margin-top:28px">Tous les exemples de cette page sont inventés à des fins pédagogiques. Aucun ne provient d'un projet ou d'un client réel.</p>
+  </div>
+</section>
+
+<!-- A1 CONCEVOIR -->
+<section class="folio wrap" id="concevoir">
+  <div class="folio-head">
+    <div class="folio-num">A1</div>
+    <div>
+      <h2><span class="en">Design · the over-centre lock</span><span class="fr">Concevoir · le verrouillage au point mort</span></h2>
+      <div class="meta"><span class="en">Principle studied for my mobile bench grinder base (NEBO STE, 2021)</span><span class="fr">Principe étudié pour mon socle de touret mobile (NEBO STE, 2021)</span></div>
+    </div>
+    <div class="sheet mono"><span class="en">Sheet</span><span class="fr">Folio</span> A1/A4</div>
+  </div>
+  <div class="at-grid">
+    <figure class="at-stage">
+      <svg id="mech" viewBox="0 0 600 380" role="img" aria-labelledby="mech-title">
+        <title id="mech-title">Slider-crank mechanism deploying castors under a machine base</title>
+        <line x1="20" y1="350" x2="580" y2="350" class="m-ground"/>
+        <g id="m-hatch"></g>
+        <g id="m-machine">
+          <rect x="170" y="70" width="260" height="40" rx="4" class="m-body"/>
+          <circle cx="190" cy="90" r="34" class="m-wheel"/>
+          <circle cx="410" cy="90" r="34" class="m-wheel"/>
+          <rect x="185" y="110" width="230" height="16" class="m-frame"/>
+          <rect x="185" y="126" width="14" height="224" class="m-frame"/>
+          <rect x="401" y="126" width="14" height="224" class="m-frame"/>
+          <rect x="175" y="340" width="34" height="10" class="m-foot"/>
+          <rect x="391" y="340" width="34" height="10" class="m-foot"/>
+          <line x1="300" y1="140" x2="300" y2="340" class="m-dead"/>
+          <text x="306" y="152" class="m-label"><tspan class="en">dead centre</tspan><tspan class="fr">point mort</tspan></text>
+          <rect id="m-stop" x="0" y="0" width="16" height="10" class="m-stop"/>
+          <g id="m-platform">
+            <rect x="215" y="-6" width="170" height="12" rx="2" class="m-plate"/>
+            <circle cx="235" cy="22" r="16" class="m-castor"/>
+            <circle cx="365" cy="22" r="16" class="m-castor"/>
+            <line x1="235" y1="6" x2="235" y2="6" class="m-plate"/>
+          </g>
+          <line id="m-rod" class="m-rod"/>
+          <line id="m-crank" class="m-crank"/>
+          <circle cx="300" cy="170" r="6" class="m-pin-fixed"/>
+          <circle id="m-pinC" r="5" class="m-pin"/>
+          <circle id="m-pinS" r="5" class="m-pin"/>
+          <g id="m-force"><line class="m-force"/><polygon class="m-force-head"/></g>
+        </g>
+      </svg>
+      <div class="at-controls">
+        <label for="mech-angle"><span class="en">Crank position</span><span class="fr">Position de la manivelle</span></label>
+        <input id="mech-angle" type="range" min="-8" max="90" step="1" value="90">
+        <div class="at-btns">
+          <button type="button" class="btn" id="mech-retract"><span class="en">Retract (work mode)</span><span class="fr">Escamoter (mode travail)</span></button>
+          <button type="button" class="btn primary" id="mech-deploy"><span class="en">Deploy (move mode)</span><span class="fr">Déployer (mode déplacement)</span></button>
+        </div>
+      </div>
+    </figure>
+    <div class="at-side">
+      <div class="at-state" id="mech-state" aria-live="polite"></div>
+      <div class="card">
+        <h3><span class="en">What you are seeing</span><span class="fr">Ce que vous voyez</span></h3>
+        <p class="en">A crank pushes a castor platform down through a connecting rod. When the crank goes just <b>past the dead centre</b> and rests on a stop, the weight of the machine pushes the mechanism <i>into</i> the stop instead of folding it back. The machine stays on its castors with no lock, spring or operator effort.</p>
+        <p class="fr">Une manivelle pousse une plateforme à roulettes vers le bas grâce à une bielle. Quand la manivelle dépasse <b>légèrement le point mort</b> et repose sur une butée, le poids de la machine pousse le mécanisme <i>contre</i> la butée au lieu de le replier. La machine reste sur ses roulettes sans verrou, sans ressort et sans effort de l'opérateur.</p>
+        <p class="en at-small">My design choice: a few degrees past dead centre are enough. Further, and the operator would have to lift the machine to unlock it.</p>
+        <p class="fr at-small">Mon choix de conception : quelques degrés au-delà du point mort suffisent. Plus loin, l'opérateur devrait soulever la machine pour déverrouiller.</p>
+      </div>
+      <div class="at-readout mono" id="mech-readout"></div>
+    </div>
+  </div>
+</section>
+
+<!-- A2 FAISABILITE -->
+<section class="folio wrap" id="faisabilite">
+  <div class="folio-head">
+    <div class="folio-num">A2</div>
+    <div>
+      <h2><span class="en">Feasibility · the lift check</span><span class="fr">Faisabilité · le contrôle de levage</span></h2>
+      <div class="meta"><span class="en">Three questions I ask before a hoist is drawn into a 3D model</span><span class="fr">Les trois questions que je me pose avant de dessiner un palan dans une maquette 3D</span></div>
+    </div>
+    <div class="sheet mono"><span class="en">Sheet</span><span class="fr">Folio</span> A2/A4</div>
+  </div>
+
+  <div class="lift-intro">
+    <p class="en">In a plant, heavy equipment must be removable for maintenance. Before modelling the hoist that will lift it, I check on paper that the operation is <b>physically possible</b>: can the hoist carry the load, does the load clear the ceiling, and does it fit through the way out? Ten minutes here can avoid weeks of rework later.</p>
+    <p class="fr">Dans une installation, les gros équipements doivent pouvoir être sortis pour la maintenance. Avant de modéliser le palan qui les lèvera, je vérifie sur le papier que l'opération est <b>physiquement possible</b> : le palan peut-il porter la charge, la charge passe-t-elle sous le plafond, et passe-t-elle par le chemin de sortie ? Dix minutes ici peuvent éviter des semaines de reprise plus tard.</p>
+  </div>
+
+  <div class="at-presets" role="group" aria-label="Scenarios">
+    <span class="mono"><span class="en">1 · Pick a case</span><span class="fr">1 · Choisissez un cas</span></span>
+    <button type="button" class="chip" data-preset="0"><span class="en">Pump motor</span><span class="fr">Moteur de pompe</span></button>
+    <button type="button" class="chip" data-preset="1"><span class="en">Heat exchanger bundle</span><span class="fr">Faisceau d'échangeur</span></button>
+    <button type="button" class="chip" data-preset="2"><span class="en">Large valve</span><span class="fr">Grosse vanne</span></button>
+  </div>
+  <div class="lift-story" id="lift-story" aria-live="polite"></div>
+
+  <div class="at-grid">
+    <div>
+      <figure class="at-stage">
+        <svg id="lift-svg" viewBox="0 0 560 300" role="img" aria-labelledby="lift-svg-title">
+          <title id="lift-svg-title">Diagram of the lift: hoist, hook height, height needed and passage width</title>
+          <text x="20" y="16" class="l-cap"><tspan class="en">SIDE VIEW</tspan><tspan class="fr">VUE DE CÔTÉ</tspan></text>
+          <text x="385" y="16" class="l-cap"><tspan class="en">EXIT, SEEN FROM ABOVE</tspan><tspan class="fr">SORTIE, VUE DE DESSUS</tspan></text>
+          <g id="lift-side"></g>
+          <g id="lift-plan"></g>
+          <g id="lift-gauge"></g>
+        </svg>
+        <p class="at-small lift-legend"><span class="dot ok"></span> <span class="en">comfortable margin</span><span class="fr">marge confortable</span> &nbsp; <span class="dot warn"></span> <span class="en">tight, to be confirmed</span><span class="fr">serré, à confirmer</span> &nbsp; <span class="dot bad"></span> <span class="en">does not work</span><span class="fr">ne passe pas</span></p>
+      </figure>
+      <form class="at-form" id="lift-form" onsubmit="return false">
+        <fieldset>
+          <legend><span class="en">2 · Or your values: the load</span><span class="fr">2 · Ou vos valeurs : la charge</span></legend>
+          <label for="l-mass"><span class="en">Load mass (kg)</span><span class="fr">Masse de la charge (kg)</span></label><input id="l-mass" type="number" min="0" step="10">
+          <label for="l-acc"><span class="en">Lifting accessories (kg)</span><span class="fr">Accessoires de levage (kg)</span></label><input id="l-acc" type="number" min="0" step="5">
+          <small class="hint en">Slings, shackles, lifting beam: they hang on the hook too.</small><small class="hint fr">Élingues, manilles, palonnier : eux aussi pendent au crochet.</small>
+          <label for="l-width"><span class="en">Load width (m)</span><span class="fr">Largeur de la charge (m)</span></label><input id="l-width" type="number" min="0" step="0.05">
+        </fieldset>
+        <fieldset>
+          <legend><span class="en">The hoist and the room</span><span class="fr">Le palan et le local</span></legend>
+          <label for="l-cap"><span class="en">Hoist rated capacity (kg)</span><span class="fr">Capacité nominale du palan (kg)</span></label><input id="l-cap" type="number" min="0" step="50">
+          <small class="hint en">The maximum load marked on the hoist.</small><small class="hint fr">La charge maximale inscrite sur le palan.</small>
+          <label for="l-hook"><span class="en">Height under hook (m)</span><span class="fr">Hauteur sous crochet (m)</span></label><input id="l-hook" type="number" min="0" step="0.05">
+          <small class="hint en">From the floor to the hook in its highest position.</small><small class="hint fr">Du sol jusqu'au crochet en position haute.</small>
+          <label for="l-need"><span class="en">Height needed (m)</span><span class="fr">Hauteur nécessaire (m)</span></label><input id="l-need" type="number" min="0" step="0.05">
+          <small class="hint en">Load height + slings + clearance above obstacles.</small><small class="hint fr">Hauteur de la charge + élingage + garde au-dessus des obstacles.</small>
+          <label for="l-door"><span class="en">Narrowest passage (m)</span><span class="fr">Passage le plus étroit (m)</span></label><input id="l-door" type="number" min="0" step="0.05">
+          <small class="hint en">The narrowest door or gap on the way out.</small><small class="hint fr">La porte ou l'espace le plus étroit sur le chemin de sortie.</small>
+        </fieldset>
+      </form>
+    </div>
+    <div class="at-side">
+      <div class="mono lift-step"><span class="en">3 · The verdict</span><span class="fr">3 · Le verdict</span></div>
+      <div class="at-verdict" id="lift-verdict" aria-live="polite"></div>
+      <ol class="lift-checks" id="lift-checks"></ol>
+      <p class="at-small en">These are early design checks, the kind that save a redesign. The thresholds are teaching values. They do not replace lifting regulations, the manufacturer's data or a certified inspection.</p>
+      <p class="at-small fr">Ce sont des contrôles d'avant-projet, ceux qui évitent de tout reprendre. Les seuils sont pédagogiques. Ils ne remplacent ni la réglementation levage, ni les données constructeur, ni une vérification par un organisme habilité.</p>
+    </div>
+  </div>
+</section>
+
+<!-- A3 INTERFACES -->
+<section class="folio wrap" id="interfaces">
+  <div class="folio-head">
+    <div class="folio-num">A3</div>
+    <div>
+      <h2><span class="en">Bridging disciplines · clash hunt</span><span class="fr">Relier les disciplines · chasse aux conflits</span></h2>
+      <div class="meta"><span class="en">Each trade's drawing is right on its own. The problems live between them.</span><span class="fr">Le plan de chaque métier est juste pris seul. Les problèmes se cachent entre eux.</span></div>
+    </div>
+    <div class="sheet mono"><span class="en">Sheet</span><span class="fr">Folio</span> A3/A4</div>
+  </div>
+  <div class="at-grid wide">
+    <figure class="at-stage">
+      <div class="at-layers" role="group" aria-label="Layers">
+        <span class="mono"><span class="en">Layers</span><span class="fr">Calques</span></span>
+        <label><input type="checkbox" data-layer="gc" checked> <span class="sw sw-gc"></span><span class="en">Civil works</span><span class="fr">Génie civil</span></label>
+        <label><input type="checkbox" data-layer="cdc" checked> <span class="sw sw-cdc"></span><span class="en">Cable trays</span><span class="fr">Chemins de câbles</span></label>
+        <label><input type="checkbox" data-layer="hvac" checked> <span class="sw sw-hvac"></span>HVAC</label>
+        <label><input type="checkbox" data-layer="pip" checked> <span class="sw sw-pip"></span><span class="en">Piping</span><span class="fr">Tuyauterie</span></label>
+        <label><input type="checkbox" data-layer="cm" checked> <span class="sw sw-cm"></span><span class="en">Steelwork</span><span class="fr">Charpente</span></label>
+      </div>
+      <svg id="clash" viewBox="0 0 640 360" role="img" aria-labelledby="clash-title">
+        <title id="clash-title">Section view of a technical room with several disciplines overlaid</title>
+        <rect x="0" y="0" width="640" height="360" class="c-bg"/>
+        <g data-l="gc">
+          <rect x="300" y="14" width="34" height="336" class="c-gc"/>
+          <rect x="0" y="340" width="640" height="20" class="c-gc"/>
+          <text x="304" y="34" class="c-tag">VOILE</text>
+        </g>
+        <g data-l="cdc">
+          <rect x="30" y="74" width="580" height="12" class="c-cdc"/>
+          <text x="40" y="68" class="c-tag">CdC-01</text>
+        </g>
+        <g data-l="hvac">
+          <rect x="50" y="148" width="230" height="44" class="c-hvac"/>
+          <text x="58" y="142" class="c-tag">GAINE 600×400</text>
+        </g>
+        <g data-l="pip">
+          <line x1="200" y1="110" x2="200" y2="340" class="c-pip"/>
+          <line x1="470" y1="110" x2="470" y2="340" class="c-pip"/>
+          <g transform="translate(470 270)"><polygon points="-10,-8 10,8 10,-8 -10,8" class="c-valve"/><line x1="0" y1="0" x2="0" y2="-16" class="c-pip-thin"/><line x1="-12" y1="-16" x2="12" y2="-16" class="c-pip-thin"/></g>
+          <text x="206" y="124" class="c-tag">L-104</text>
+          <text x="476" y="124" class="c-tag">L-207</text>
+        </g>
+        <g data-l="cm">
+          <rect x="380" y="248" width="220" height="10" class="c-cm"/>
+          <line x1="590" y1="258" x2="590" y2="340" class="c-cm-l"/>
+          <line x1="390" y1="258" x2="390" y2="340" class="c-cm-l"/>
+          <text x="520" y="242" class="c-tag">PF-02</text>
+        </g>
+        <g id="hits">
+          <circle data-hit="0" cx="317" cy="80" r="24" class="c-hit"/>
+          <circle data-hit="1" cx="200" cy="170" r="24" class="c-hit"/>
+          <circle data-hit="2" cx="470" cy="256" r="24" class="c-hit"/>
+        </g>
+      </svg>
+      <div class="at-btns">
+        <span class="mono" id="clash-count"></span>
+        <button type="button" class="btn" id="clash-hint"><span class="en">Hint</span><span class="fr">Indice</span></button>
+        <button type="button" class="btn" id="clash-reset"><span class="en">Start again</span><span class="fr">Recommencer</span></button>
+      </div>
+    </figure>
+    <div class="at-side">
+      <p class="en">Click where two disciplines collide. Turn layers off to see what each trade sees on its own drawing.</p>
+      <p class="fr">Cliquez là où deux disciplines se rencontrent. Désactivez des calques pour voir ce que chaque métier voit sur son propre plan.</p>
+      <ol class="at-found" id="clash-found"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- A4 AUTOMATISER -->
+<section class="folio wrap" id="automatiser">
+  <div class="folio-head">
+    <div class="folio-num">A4</div>
+    <div>
+      <h2><span class="en">Automation · let the data talk</span><span class="fr">Automatiser · faire parler les données</span></h2>
+      <div class="meta"><span class="en">The room from A3, as a script sees it in a 3D model export</span><span class="fr">Le local du module A3, tel qu'un script le voit dans un export de maquette 3D</span></div>
+    </div>
+    <div class="sheet mono"><span class="en">Sheet</span><span class="fr">Folio</span> A4/A4</div>
+  </div>
+
+  <div class="lift-intro">
+    <p class="en">In A3 you found the clashes by eye. A 3D model (E3D or any other) knows much more than a drawing: <b>where</b> each object is, <b>what</b> it is called, and which room civil works has defined. By crossing these three sources, a script can locate every object, fill in missing information, spot inconsistencies, sort objects into work packages and find the clashes on its own.</p>
+    <p class="fr">Dans le module A3, vous avez trouvé les conflits à l'œil. Une maquette 3D (E3D ou une autre) en sait bien plus qu'un plan : <b>où</b> se trouve chaque objet, <b>comment</b> il s'appelle, et quel local le génie civil a défini. En croisant ces trois sources, un script peut localiser chaque objet, compléter les informations manquantes, repérer les incohérences, ranger les objets par lot et retrouver seul les conflits.</p>
+  </div>
+
+  <div class="codif">
+    <span class="mono"><span class="en">How a tag is built (invented codification)</span><span class="fr">Comment se lit un repère (codification inventée)</span></span>
+    <div class="codif-row">
+      <span class="codif-part"><b>B1</b><small><span class="en">building</span><span class="fr">bâtiment</span></small></span><span class="codif-sep">-</span>
+      <span class="codif-part"><b>R102</b><small><span class="en">room</span><span class="fr">local</span></small></span><span class="codif-sep">-</span>
+      <span class="codif-part"><b>PIP</b><small><span class="en">discipline</span><span class="fr">discipline</span></small></span><span class="codif-sep">-</span>
+      <span class="codif-part"><b>207</b><small><span class="en">system / line no.</span><span class="fr">n° de système / ligne</span></small></span>
+    </div>
+    <span class="at-small en">Some tags have no room part (B1-PIP-104). The script then has to find the room another way.</span>
+    <span class="at-small fr">Certains repères n'ont pas de partie « local » (B1-PIP-104). Le script doit alors trouver le local autrement.</span>
+  </div>
+
+  <div class="at-grid wide">
+    <figure class="at-stage">
+      <svg id="auto-svg" viewBox="0 0 640 360" role="img" aria-labelledby="auto-svg-title">
+        <title id="auto-svg-title">The room from module A3, with civil works rooms and the objects of each discipline</title>
+        <g id="auto-scene"></g>
+        <g id="auto-marks"></g>
+      </svg>
+      <div class="at-btns">
+        <button type="button" class="btn primary" id="auto-run"><span class="en">Run the analysis</span><span class="fr">Lancer l'analyse</span></button>
+        <button type="button" class="btn" id="auto-reset"><span class="en">Reset</span><span class="fr">Réinitialiser</span></button>
+      </div>
+    </figure>
+    <div class="at-side">
+      <ol class="auto-steps" id="auto-steps"></ol>
+      <div class="at-verdict" id="auto-summary" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="tablewrap at-tablewrap auto-tw">
+    <table class="status at-table" id="auto-table">
+      <thead><tr>
+        <th><span class="en">Tag</span><span class="fr">Repère</span></th>
+        <th><span class="en">Discipline</span><span class="fr">Discipline</span></th>
+        <th><span class="en">Position x (m)</span><span class="fr">Position x (m)</span></th>
+        <th><span class="en">Room in attribute</span><span class="fr">Local (attribut)</span></th>
+        <th><span class="en">Room from geometry</span><span class="fr">Local (géométrie)</span></th>
+        <th><span class="en">Room from tag</span><span class="fr">Local (repère)</span></th>
+        <th><span class="en">Work package</span><span class="fr">Lot</span></th>
+        <th><span class="en">Result</span><span class="fr">Résultat</span></th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <ol class="at-found" id="auto-clashes"></ol>
+  <div class="role-note">
+    <p class="en">My role is not to write every line of code. It is to know which rules matter, in which order to cross the sources, and when a result must go back to a human. AI assists me a lot in putting my ideas in place and keeping them consistent; the engineering reasoning, the rules and the validation remain mine.</p>
+    <p class="fr">Mon rôle n'est pas d'écrire chaque ligne de code. C'est de savoir quelles règles comptent, dans quel ordre croiser les sources, et quand un résultat doit revenir à un humain. L'IA m'assiste beaucoup pour mettre mes idées en place et les rendre cohérentes ; le raisonnement métier, les règles et la validation restent les miens.</p>
+    <p class="at-small en">Crossing sources like this is one of the capabilities of MAIA-PID, my own project, still in development.</p>
+    <p class="at-small fr">Croiser ainsi les sources est l'une des capacités de MAIA-PID, mon projet personnel, encore en cours de développement.</p>
+  </div>
+</section>
+<section class="folio wrap lex" id="lexique">
+  <div class="folio-head">
+    <div class="folio-num">L</div>
+    <div>
+      <h2><span class="en">Glossary · for those outside the trade</span><span class="fr">Lexique · pour ceux qui ne sont pas du métier</span></h2>
+      <div class="meta"><span class="en">Each term: what it is, what it is for, and where to read more</span><span class="fr">Pour chaque terme : ce que c'est, à quoi ça sert, et où en savoir plus</span></div>
+    </div>
+    <div class="sheet mono" id="lex-count"></div>
+  </div>
+  <label class="lex-search" for="lex-filter"><span class="en">Search a term</span><span class="fr">Chercher un terme</span><input id="lex-filter" type="search" autocomplete="off"></label>
+  <div id="lex-list"></div>
+  <p class="at-small en">References are standards or sources for going further; they are given for information.</p>
+  <p class="at-small fr">Les références sont des normes ou des sources pour approfondir ; elles sont données à titre indicatif.</p>
+</section>
+</main>
+<div id="term-pop" role="tooltip" hidden></div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Pierre Sylva · <span class="en">Anonymous, cookie-free audience measurement (GoatCounter)</span><span class="fr">Mesure d'audience anonyme, sans cookie (GoatCounter)</span></span>
+    <span class="mono">Rev. 2026-11 · <span class="en">Figures and statuses as of November 2026</span><span class="fr">Chiffres et statuts à novembre 2026</span></span>
+  </div>
+</footer>
+<script>
+(function(){
+  var root=document.documentElement;
+  var rerender=[];
+  function isFr(){return root.classList.contains('fr');}
+  function T(fr,en){return isFr()?fr:en;}
+  function num(n,d){return Number(n).toLocaleString(isFr()?'fr-FR':'en-GB',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});}
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- langue ---------- */
+  function setLang(l){
+    root.classList.remove('en','fr');root.classList.add(l);root.setAttribute('lang',l);
+    document.querySelectorAll('.lang button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.set===l?'true':'false')});
+    try{localStorage.setItem('ps-lang',l)}catch(e){}
+    rerender.forEach(function(f){f();});
+  }
+  var saved=null;try{saved=localStorage.getItem('ps-lang')}catch(e){}
+  var nav=(navigator.language||'en').toLowerCase();
+  document.querySelectorAll('.lang button').forEach(function(b){b.addEventListener('click',function(){setLang(b.dataset.set)})});
+
+  /* ---------- A1 mécanisme ---------- */
+  var R=50,L=110,PX=300,PY=170,FEET=350,STOP=-8;
+  var slider=document.getElementById('mech-angle');
+  var svgNS='http://www.w3.org/2000/svg';
+  var theta=90;
+  (function placeStop(){
+    var a=STOP*Math.PI/180, cx=PX-R*Math.sin(a), cy=PY+R*Math.cos(a);
+    var s=document.getElementById('m-stop'); s.setAttribute('x',(cx+4).toFixed(1)); s.setAttribute('y',(cy-14).toFixed(1));
+  })();
+  function drawMech(){
+    var a=theta*Math.PI/180;
+    var cx=PX-R*Math.sin(a), cy=PY+R*Math.cos(a);
+    var yS=PY+R*Math.cos(a)+Math.sqrt(L*L-Math.pow(R*Math.sin(a),2));
+    var lift=Math.max(0,yS+38-FEET);
+    document.getElementById('m-machine').setAttribute('transform','translate(0 '+(-lift).toFixed(2)+')');
+    document.getElementById('m-platform').setAttribute('transform','translate(0 '+yS.toFixed(2)+')');
+    var crank=document.getElementById('m-crank'), rod=document.getElementById('m-rod');
+    crank.setAttribute('x1',PX);crank.setAttribute('y1',PY);crank.setAttribute('x2',cx);crank.setAttribute('y2',cy);
+    rod.setAttribute('x1',cx);rod.setAttribute('y1',cy);rod.setAttribute('x2',PX);rod.setAttribute('y2',yS);
+    var pc=document.getElementById('m-pinC'),ps=document.getElementById('m-pinS');
+    pc.setAttribute('cx',cx);pc.setAttribute('cy',cy);ps.setAttribute('cx',PX);ps.setAttribute('cy',yS);
+    var f=document.getElementById('m-force');
+    if(lift>0.5){
+      f.style.display='';
+      f.querySelector('line').setAttribute('x1',300);f.querySelector('line').setAttribute('y1',4);f.querySelector('line').setAttribute('x2',300);f.querySelector('line').setAttribute('y2',44);
+      f.querySelector('polygon').setAttribute('points','292,40 308,40 300,56');
+    }else{f.style.display='none';}
+    var st=document.getElementById('mech-state'), tone, title, txt;
+    if(lift<=0.5){tone='ok';title=T('Mode travail','Work mode');txt=T('La machine repose sur ses pieds : stable pour meuler.','The machine rests on its feet: stable for grinding.');}
+    else if(theta>2){tone='warn';title=T('Instable','Unstable');txt=T('Avant le point mort, le poids pousse la manivelle vers l’arrière : sans effort maintenu, les roulettes se replient.','Before dead centre, the weight pushes the crank back: without constant effort the castors fold away.');}
+    else if(theta>=-2){tone='warn';title=T('Au point mort','At dead centre');txt=T('Équilibre instable : la moindre vibration fait basculer d’un côté ou de l’autre.','Unstable balance: the slightest vibration tips it one way or the other.');}
+    else if(theta>STOP+0.5){tone='warn';title=T('Presque verrouillé','Almost locked');txt=T('Encore un peu : la manivelle doit venir en appui sur la butée.','A little further: the crank must rest against the stop.');}
+    else{tone='ok';title=T('Verrouillé : mode déplacement','Locked: move mode');txt=T('Le poids pousse la manivelle contre la butée. La machine roule, sans verrou ni ressort.','The weight pushes the crank against the stop. The machine rolls, with no latch or spring.');}
+    st.dataset.tone=tone;st.innerHTML='<b></b><span></span>';st.querySelector('b').textContent=title;st.querySelector('span').textContent=txt;
+    document.getElementById('mech-readout').textContent='θ = '+Math.round(theta)+'° · '+T('garde au sol','ground clearance')+' : '+num(lift*2.5,0)+' mm ('+T('illustratif','illustrative')+')';
+  }
+  var anim=null;
+  function animateTo(target){
+    if(anim)cancelAnimationFrame(anim);
+    if(reduce){theta=target;slider.value=target;drawMech();return;}
+    var start=theta,t0=null,dur=1100;
+    function step(ts){if(t0===null)t0=ts;var k=Math.min(1,(ts-t0)/dur);var e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;theta=start+(target-start)*e;slider.value=Math.round(theta);drawMech();if(k<1)anim=requestAnimationFrame(step);}
+    anim=requestAnimationFrame(step);
+  }
+  slider.addEventListener('input',function(){theta=+slider.value;drawMech();});
+  document.getElementById('mech-deploy').addEventListener('click',function(){animateTo(STOP);});
+  document.getElementById('mech-retract').addEventListener('click',function(){animateTo(90);});
+  rerender.push(drawMech);
+
+  /* ---------- A2 levage ---------- */
+  var presets=[
+    {mass:850,acc:60,width:0.9,cap:1000,hook:3.2,need:2.6,door:1.2,
+     story:['Un moteur de pompe de 850 kg doit être sorti de son local pour révision. Le local a déjà un palan de 1 t. Suffit-il ?','An 850 kg pump motor must be taken out of its room for overhaul. The room already has a 1 t hoist. Is it enough?']},
+    {mass:4200,acc:250,width:1.6,cap:5000,hook:4.1,need:4.3,door:1.9,
+     story:['Le faisceau tubulaire d’un échangeur (4,2 t) doit être extrait pour nettoyage, avec un palan de 5 t. La capacité semble large… mais est-ce la seule question ?','The tube bundle of a heat exchanger (4.2 t) must be pulled out for cleaning with a 5 t hoist. Capacity looks generous… but is that the only question?']},
+    {mass:620,acc:40,width:1.1,cap:1000,hook:3.5,need:2.4,door:1.5,
+     story:['Une grosse vanne de 620 kg doit être déposée et remplacée, avec un palan de 1 t, dans un local haut de plafond.','A 620 kg valve must be removed and replaced with a 1 t hoist, in a room with a high ceiling.']}
+  ];
+  var ids={mass:'l-mass',acc:'l-acc',width:'l-width',cap:'l-cap',hook:'l-hook',need:'l-need',door:'l-door'};
+  var currentPreset=0;
+  function loadPreset(i){var p=presets[i];currentPreset=i;Object.keys(ids).forEach(function(k){document.getElementById(ids[k]).value=p[k];});
+    document.querySelectorAll('[data-preset]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.preset==String(i)?'true':'false')});drawLift();}
+  function v(k){var x=parseFloat(document.getElementById(ids[k]).value);return isFinite(x)?x:0;}
+  var COL={ok:'var(--ok)',warn:'var(--amber)',bad:'#C2413A'};
+  function el(tag,attrs,text){var e=document.createElementNS(svgNS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e;}
+  function drawLift(){
+    var rank={ok:0,warn:1,bad:2};
+    var mass=v('mass'),acc=v('acc'),total=mass+acc,cap=v('cap'),ratio=cap>0?total/cap:Infinity;
+    var hook=v('hook'),need=v('need'),h=hook-need;
+    var door=v('door'),width=v('width'),w=door-width;
+    var c1=ratio>1?'bad':(ratio>0.9?'warn':'ok');
+    var c2=h<0?'bad':(h<0.3?'warn':'ok');
+    var c3=w<0?'bad':(w<0.2?'warn':'ok');
+    var worst=[c1,c2,c3].reduce(function(m,c){return rank[c]>rank[m]?c:m;},'ok');
+
+    /* histoire */
+    var story=document.getElementById('lift-story');
+    story.textContent=currentPreset===null?T('Vos valeurs : le contrôle se met à jour à chaque saisie.','Your own values: the check updates as you type.'):presets[currentPreset].story[isFr()?0:1];
+
+    /* schéma vue de côté */
+    var side=document.getElementById('lift-side');side.innerHTML='';
+    var FL=262,TOP=48,sc=(FL-TOP)/Math.max(hook,need,0.5);
+    var yHook=FL-hook*sc,yNeed=FL-need*sc;
+    side.appendChild(el('rect',{x:20,y:28,width:330,height:12,class:'l-beam'}));
+    side.appendChild(el('rect',{x:120,y:40,width:44,height:Math.max(4,yHook-48),class:'l-hoist'}));
+    side.appendChild(el('line',{x1:20,y1:FL,x2:350,y2:FL,class:'l-floor'}));
+    var loadH=Math.max(16,(need*0.55)*sc),loadW=Math.min(120,Math.max(40,width*55));
+    var lx=142-loadW/2,ly=FL-loadH-4;
+    side.appendChild(el('line',{x1:142,y1:yHook,x2:lx+6,y2:ly,class:'l-sling'}));
+    side.appendChild(el('line',{x1:142,y1:yHook,x2:lx+loadW-6,y2:ly,class:'l-sling'}));
+    side.appendChild(el('rect',{x:lx,y:ly,width:loadW,height:loadH,class:'l-load',style:'stroke:'+COL[c1]}));
+    side.appendChild(el('text',{x:142,y:ly+loadH/2+4,class:'l-txt','text-anchor':'middle'},num(total)+' kg'));
+    side.appendChild(el('path',{d:'M136 '+(yHook-2)+' q6 10 12 0',class:'l-hook'}));
+    side.appendChild(el('line',{x1:20,y1:yHook,x2:350,y2:yHook,class:'l-dash'}));
+    // cotes
+    function dim(x,y1,y2,label,col){side.appendChild(el('line',{x1:x,y1:y1,x2:x,y2:y2,class:'l-dim',style:'stroke:'+col}));
+      side.appendChild(el('line',{x1:x-5,y1:y1,x2:x+5,y2:y1,class:'l-dim',style:'stroke:'+col}));side.appendChild(el('line',{x1:x-5,y1:y2,x2:x+5,y2:y2,class:'l-dim',style:'stroke:'+col}));
+      var my=(y1+y2)/2;side.appendChild(el('text',{x:x+7,y:my,class:'l-txt',style:'fill:'+col},label[0]));
+      side.appendChild(el('text',{x:x+7,y:my+12,class:'l-mini'},label[1]));}
+    dim(226,FL,yHook,[num(hook,2)+' m',T('sous crochet','under hook')],'var(--ink)');
+    dim(306,FL,yNeed,[num(need,2)+' m',T('nécessaire','needed')],COL[c2]);
+    if(h<0){side.appendChild(el('rect',{x:298,y:yNeed,width:16,height:yHook-yNeed,class:'l-over'}));}
+
+    /* plan de sortie */
+    var plan=document.getElementById('lift-plan');plan.innerHTML='';
+    var PX0=385,PW=160,psc=150/Math.max(door,width,0.5),cx=PX0+PW/2,py=150;
+    var dw=door*psc;
+    plan.appendChild(el('rect',{x:PX0,y:py-14,width:(PW-dw)/2,height:28,class:'l-wall'}));
+    plan.appendChild(el('rect',{x:cx+dw/2,y:py-14,width:(PW-dw)/2,height:28,class:'l-wall'}));
+    var lw=width*psc;
+    plan.appendChild(el('rect',{x:cx-lw/2,y:py-70,width:lw,height:44,class:'l-load',style:'stroke:'+COL[c3]}));
+    plan.appendChild(el('path',{d:'M'+cx+' '+(py-22)+' L'+cx+' '+(py+40),class:'l-arrow'}));
+    plan.appendChild(el('polygon',{points:(cx-6)+','+(py+34)+' '+(cx+6)+','+(py+34)+' '+cx+','+(py+46),class:'l-arrowhead'}));
+    plan.appendChild(el('text',{x:cx,y:py-76,class:'l-txt','text-anchor':'middle',style:'fill:'+COL[c3]},T('charge ','load ')+num(width,2)+' m'));
+    plan.appendChild(el('text',{x:cx,y:py+64,class:'l-txt','text-anchor':'middle'},T('passage ','passage ')+num(door,2)+' m'));
+    if(w<0){plan.appendChild(el('rect',{x:cx-lw/2,y:py-14,width:(lw-dw)/2,height:28,class:'l-over'}));plan.appendChild(el('rect',{x:cx+dw/2,y:py-14,width:(lw-dw)/2,height:28,class:'l-over'}));}
+
+    /* jauge de masse */
+    var g=document.getElementById('lift-gauge');g.innerHTML='';
+    var GX=385,GY=258,GW=160;
+    g.appendChild(el('text',{x:GX,y:GY-8,class:'l-cap'},T('CHARGE / CAPACITÉ','LOAD / CAPACITY')));
+    g.appendChild(el('rect',{x:GX,y:GY,width:GW,height:12,class:'l-gauge'}));
+    g.appendChild(el('rect',{x:GX,y:GY,width:Math.min(GW,GW*(isFinite(ratio)?ratio:1.2)/1.2),height:12,style:'fill:'+COL[c1]}));
+    var m90=GX+GW*0.9/1.2,m100=GX+GW/1.2;
+    g.appendChild(el('line',{x1:m90,y1:GY-3,x2:m90,y2:GY+15,class:'l-mark'}));
+    g.appendChild(el('line',{x1:m100,y1:GY-3,x2:m100,y2:GY+15,class:'l-mark strong'}));
+    g.appendChild(el('text',{x:m100+3,y:GY+28,class:'l-mini','text-anchor':'start'},'100 %'));
+    g.appendChild(el('text',{x:m90-3,y:GY+28,class:'l-mini','text-anchor':'end'},'90 %'));
+    g.appendChild(el('text',{x:GX+GW,y:GY-8,class:'l-txt','text-anchor':'end',style:'fill:'+COL[c1]},isFinite(ratio)?num(ratio*100)+' %':'—'));
+
+    /* verdict */
+    var vt=document.getElementById('lift-verdict');vt.dataset.tone=worst;
+    var titles={ok:T('Faisable','Feasible'),warn:T('Faisable, avec réserves','Feasible, with reservations'),bad:T('Pas faisable en l’état','Not feasible as it stands')};
+    var subs={ok:T('Les trois contrôles passent : on peut dessiner le palan dans la maquette.','All three checks pass: the hoist can be drawn into the model.'),warn:T('Rien ne bloque, mais un point est serré : à confirmer avec les données réelles avant de figer la maquette.','Nothing blocks, but one point is tight: confirm with real data before freezing the model.'),bad:T('Au moins un contrôle échoue. Mieux vaut le découvrir maintenant que le jour de la maintenance.','At least one check fails. Better to find out now than on maintenance day.')};
+    vt.innerHTML='<b></b><span></span>';vt.querySelector('b').textContent=titles[worst];vt.querySelector('span').textContent=subs[worst];
+
+    /* détail des 3 contrôles */
+    var checks=[
+      {tone:c1,
+       q:T('Le palan peut-il porter la charge ?','Can the hoist carry the load?'),
+       calc:num(mass)+' kg + '+num(acc)+' kg '+T('d’accessoires','of accessories')+' = '+num(total)+' kg → '+(isFinite(ratio)?num(ratio*100):'—')+' % '+T('de','of')+' '+num(cap)+' kg',
+       res:{ok:T('Marge confortable.','Comfortable margin.'),warn:T('Plus de 90 % de la capacité : marge faible, à confirmer avec les masses réelles.','Over 90 % of capacity: thin margin, confirm with actual weights.'),bad:T('Dépassement : le palan est sous-dimensionné.','Overload: the hoist is undersized.')}[c1],
+       why:T('Pourquoi : on oublie souvent le poids des élingues et du palonnier. Ils pendent eux aussi au crochet.','Why: the weight of slings and lifting beam is often forgotten. They hang on the hook too.')},
+      {tone:c2,
+       q:T('La charge passe-t-elle sous le crochet ?','Does the load clear under the hook?'),
+       calc:num(hook,2)+' m '+T('disponibles','available')+' − '+num(need,2)+' m '+T('nécessaires','needed')+' = '+(h>=0?'+':'−')+num(Math.abs(h),2)+' m',
+       res:{ok:T('Assez de hauteur.','Enough headroom.'),warn:T('Moins de 0,30 m de marge : serré, vérifier l’élingage réel.','Less than 0.30 m margin: tight, check the actual rigging.'),bad:T('Il manque '+num(-h,2)+' m : la charge ne décolle pas assez pour franchir les obstacles.','Missing '+num(-h,2)+' m: the load cannot be raised enough to clear obstacles.')}[c2],
+       why:T('Pourquoi : la hauteur se perd vite entre la charge, les élingues et la garde au-dessus des tuyauteries.','Why: height is quickly eaten up by the load, the slings and the clearance above pipes.')},
+      {tone:c3,
+       q:T('La charge passe-t-elle par la sortie ?','Does the load fit through the way out?'),
+       calc:num(door,2)+' m '+T('de passage','of passage')+' − '+num(width,2)+' m '+T('de charge','of load')+' = '+(w>=0?'+':'−')+num(Math.abs(w),2)+' m',
+       res:{ok:T('Assez de jeu pour manœuvrer.','Enough clearance to manoeuvre.'),warn:T('Moins de 0,20 m de jeu : manutention délicate, risque de choc.','Less than 0.20 m of clearance: delicate handling, risk of impact.'),bad:T('La charge est plus large que le passage : elle ne sort pas du local.','The load is wider than the passage: it cannot leave the room.')}[c3],
+       why:T('Pourquoi : on vérifie souvent le levage, plus rarement le trajet complet jusqu’à la sortie.','Why: people check the lift itself, more rarely the whole route to the exit.')}
+    ];
+    var ol=document.getElementById('lift-checks');ol.innerHTML='';
+    checks.forEach(function(c){
+      var li=document.createElement('li');li.dataset.tone=c.tone;
+      var q=document.createElement('b');q.textContent=c.q;
+      var calc=document.createElement('span');calc.className='mono lift-calc';calc.textContent=c.calc;
+      var r=document.createElement('span');r.className='lift-res';var d=document.createElement('span');d.className='dot '+c.tone;r.appendChild(d);r.appendChild(document.createTextNode(' '+c.res));
+      var y=document.createElement('span');y.className='at-small';y.textContent=c.why;
+      li.appendChild(q);li.appendChild(calc);li.appendChild(r);li.appendChild(y);ol.appendChild(li);
+    });
+  }
+  document.querySelectorAll('[data-preset]').forEach(function(b){b.addEventListener('click',function(){loadPreset(+b.dataset.preset);});});
+  Object.keys(ids).forEach(function(k){document.getElementById(ids[k]).addEventListener('input',function(){currentPreset=null;document.querySelectorAll('[data-preset]').forEach(function(b){b.setAttribute('aria-pressed','false')});drawLift();});});
+  rerender.push(drawLift);
+
+  /* ---------- A3 conflits ---------- */
+  var clashes=[
+    {pair:['Chemins de câbles × Génie civil','Cable trays × Civil works'],txt:['CdC-01 traverse le voile sans réservation. Solution : demander une réservation au génie civil, ou faire passer le chemin de câbles par une ouverture existante.','CdC-01 crosses the wall with no opening. Fix: request a wall opening from civil works, or route the tray through an existing one.']},
+    {pair:['Tuyauterie × HVAC','Piping × HVAC'],txt:['La ligne L-104 traverse la gaine de ventilation. Solution : décaler la ligne ou la faire passer sous la gaine, en contrôlant les pentes et les supports.','Line L-104 runs straight through the duct. Fix: shift the line or route it under the duct, checking slopes and supports.']},
+    {pair:['Tuyauterie × Charpente','Piping × Steelwork'],txt:['Le volant de la vanne de L-207 est collé sous la plateforme PF-02 : impossible de la manœuvrer. Solution : remonter la vanne au-dessus de la plateforme ou prévoir une commande déportée.','The handwheel of the valve on L-207 sits right under platform PF-02: nobody can operate it. Fix: move the valve above the platform or add an extension spindle.']}
+  ];
+  var found=[];
+  function drawClash(){
+    document.getElementById('clash-count').textContent=T('Trouvés : ','Found: ')+found.length+' / 3';
+    var ol=document.getElementById('clash-found');ol.innerHTML='';
+    found.forEach(function(i){var c=clashes[i];var li=document.createElement('li');var b=document.createElement('b');b.textContent=c.pair[isFr()?0:1];var s=document.createElement('span');s.textContent=c.txt[isFr()?0:1];li.appendChild(b);li.appendChild(s);ol.appendChild(li);});
+    if(found.length===3){var li=document.createElement('li');li.style.borderColor='var(--ok)';var b=document.createElement('b');b.style.color='var(--ok)';b.textContent=T('Bravo','Well done');var s=document.createElement('span');s.textContent=T('Chaque plan était juste pris seul. C’est en les superposant qu’on voit les problèmes : c’est ce travail d’interface que je fais au quotidien.','Each drawing was right on its own. Problems only show when you overlay them: that interface work is what I do every day.');li.appendChild(b);li.appendChild(s);ol.appendChild(li);}
+  }
+  document.querySelectorAll('.c-hit').forEach(function(h){
+    h.addEventListener('click',function(){var i=+h.dataset.hit;if(found.indexOf(i)===-1){found.push(i);h.classList.add('found');drawClash();}});
+  });
+  document.getElementById('clash-hint').addEventListener('click',function(){
+    for(var i=0;i<3;i++){if(found.indexOf(i)===-1){var h=document.querySelector('.c-hit[data-hit="'+i+'"]');h.classList.remove('hint');void h.getBoundingClientRect();h.classList.add('hint');setTimeout(function(){h.classList.remove('hint')},2100);break;}}
+  });
+  document.getElementById('clash-reset').addEventListener('click',function(){found=[];document.querySelectorAll('.c-hit').forEach(function(h){h.classList.remove('found')});drawClash();});
+  document.querySelectorAll('[data-layer]').forEach(function(cb){cb.addEventListener('change',function(){var g=document.querySelector('#clash [data-l="'+cb.dataset.layer+'"]');g.style.display=cb.checked?'':'none';});});
+  rerender.push(drawClash);
+
+  /* ---------- A4 automatisation ---------- */
+  var SCALE=0.02; // 1 unité de dessin = 2 cm
+  var ROOMS=[{id:'R101',x1:0,x2:300},{id:'R102',x1:334,x2:640}];
+  var WALL={tag:'B1-GC-VO-01',disc:'gc',bb:[300,14,334,340],openings:[]};
+  var DISC={cdc:['Chemins de câbles','Cable trays','ELEC'],hvac:['HVAC','HVAC','HVAC'],pip:['Tuyauterie','Piping','TUY'],cm:['Charpente','Steelwork','CM'],gc:['Génie civil','Civil works','GC']};
+  var OBJ=[
+    {tag:'B1-R101-CDC-001',disc:'cdc',bb:[30,74,610,86],attr:'R101'},
+    {tag:'B1-R101-HV-012',disc:'hvac',bb:[50,148,280,192],attr:'R101'},
+    {tag:'B1-PIP-104',disc:'pip',bb:[195,110,205,340],attr:''},
+    {tag:'B1-R102-PIP-207',disc:'pip',bb:[465,110,475,340],attr:'R101'},
+    {tag:'B1-R102-VA-207',disc:'pip',bb:[458,252,482,280],attr:'R102',kind:'valve'},
+    {tag:'B1-CM-PF02',disc:'cm',bb:[380,248,600,258],attr:'',openings:['B1-R102-PIP-207']},
+    {tag:'B1-SUP-207-03',disc:'pip',bb:null,attr:'',kind:'support'}
+  ];
+  function roomFromTag(t){var m=t.match(/^B1-(R\d{3})-/);return m?m[1]:'';}
+  function sysNo(t){var m=t.match(/-(\d{3})(?:-\d+)?$/);return m?m[1]:'';}
+  function roomsFromGeom(bb){if(!bb)return [];return ROOMS.filter(function(r){return bb[0]<r.x2&&bb[2]>r.x1;}).map(function(r){return r.id;});}
+  function hit(a,b){return a[0]<b[2]&&a[2]>b[0]&&a[1]<b[3]&&a[3]>b[1];}
+  function analyse(){
+    var out=OBJ.map(function(o){
+      var r={o:o,geo:roomsFromGeom(o.bb),code:roomFromTag(o.tag),attr:o.attr,final:'',how:'',tone:'ok',notes:[]};
+      return r;
+    });
+    // étape 3 : recoupement et complétion
+    out.forEach(function(r){
+      var o=r.o;
+      if(r.geo.length>1){r.final=r.geo.join(' + ');r.tone='warn';r.how='span';return;}
+      var g=r.geo[0]||'',c=r.code,a=r.attr;
+      var votes={};[g,c,a].forEach(function(x){if(x)votes[x]=(votes[x]||0)+1;});
+      var keys=Object.keys(votes);
+      if(!keys.length){
+        // aucune source : correspondance par n° de système avec un objet d'une autre discipline / déjà localisé
+        var n=sysNo(o.tag);var mate=out.filter(function(x){return x!==r&&sysNo(x.o.tag)===n&&(x.geo.length===1||x.code);})[0];
+        if(mate){r.final=mate.geo[0]||mate.code;r.how='match';r.mate=mate.o.tag;r.tone='ok';}
+        else{r.final='?';r.how='none';r.tone='bad';}
+        return;
+      }
+      keys.sort(function(p,q){return votes[q]-votes[p];});
+      r.final=keys[0];
+      if(a&&a!==r.final){r.how='fix';r.tone='warn';}
+      else if(!a){r.how='fill';r.tone='ok';}
+      else r.how='ok';
+    });
+    // lots
+    out.forEach(function(r){r.lot=(r.final&&r.final!=='?')?(r.final.split(' + ')[0]+'-'+DISC[r.o.disc][2]):'—';});
+    // étape 4 : interférences
+    var all=OBJ.filter(function(o){return o.bb;}).concat([WALL]);
+    var clashes=[];
+    for(var i=0;i<all.length;i++)for(var j=i+1;j<all.length;j++){
+      var A=all[i],B=all[j];
+      if(A.disc===B.disc&&sysNo(A.tag)&&sysNo(A.tag)===sysNo(B.tag))continue; // même système : raccordement, pas conflit
+      if(A.disc===B.disc&&A.disc!=='pip')continue;
+      if(!hit(A.bb,B.bb))continue;
+      var opened=(A.openings||[]).indexOf(B.tag)>=0||(B.openings||[]).indexOf(A.tag)>=0;
+      clashes.push({a:A,b:B,opened:opened});
+    }
+    return {rows:out,clashes:clashes};
+  }
+  var state={step:0,res:null,running:false};
+  var STEPS=[
+    ['Lire l’export','Read the export','7 objets : position, attributs, repère.','7 objects: position, attributes, tag.'],
+    ['Localiser par la géométrie','Locate by geometry','Chaque objet est placé dans un local du génie civil d’après sa position.','Each object is placed in a civil works room from its position.'],
+    ['Recouper et compléter','Cross-check and fill in','Attribut, géométrie et repère sont comparés ; les manques sont complétés, par correspondance si besoin.','Attribute, geometry and tag are compared; gaps are filled, by matching if needed.'],
+    ['Chercher les interférences','Search for clashes','Les volumes de disciplines différentes sont croisés deux à deux, en tenant compte des réservations prévues.','Volumes of different disciplines are crossed in pairs, taking planned openings into account.']
+  ];
+  function fmtX(bb){return bb?num(bb[0]*SCALE,2)+' → '+num(bb[2]*SCALE,2):'—';}
+  function roomLbl(x){return x?x.replace('R','R-'):'—';}
+  function drawAutoScene(){
+    var sc=document.getElementById('auto-scene');sc.innerHTML='';
+    var cls={cdc:'c-cdc',hvac:'c-hvac',pip:'c-pip-r',cm:'c-cm',gc:'c-gc'};
+    sc.appendChild(el('rect',{x:0,y:0,width:640,height:360,class:'c-bg'}));
+    if(state.step>=2){ROOMS.forEach(function(r,i){sc.appendChild(el('rect',{x:r.x1,y:14,width:r.x2-r.x1,height:326,class:'a-room a-room-'+i}));});}
+    ROOMS.forEach(function(r){sc.appendChild(el('text',{x:r.x1+12,y:332,class:'a-room-lbl'},(isFr()?'LOCAL ':'ROOM ')+roomLbl(r.id)));});
+    sc.appendChild(el('rect',{x:300,y:14,width:34,height:326,class:'c-gc'}));
+    sc.appendChild(el('rect',{x:0,y:340,width:640,height:20,class:'c-gc'}));
+    OBJ.forEach(function(o){
+      if(!o.bb)return;var b=o.bb;
+      if(o.kind==='valve'){var cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2;sc.appendChild(el('polygon',{points:(cx-10)+','+(cy-8)+' '+(cx+10)+','+(cy+8)+' '+(cx+10)+','+(cy-8)+' '+(cx-10)+','+(cy+8),class:'c-valve'}));sc.appendChild(el('line',{x1:cx-12,y1:b[1],x2:cx+12,y2:b[1],class:'c-pip-thin'}));}
+      else sc.appendChild(el('rect',{x:b[0],y:b[1],width:b[2]-b[0],height:b[3]-b[1],class:cls[o.disc]}));
+      if(state.step>=1&&o.kind!=='valve'){sc.appendChild(el('text',{x:b[0]+4,y:b[1]-4,class:'c-tag'},o.tag));}
+    });
+    if(state.step>=1){var v=OBJ[4].bb;sc.appendChild(el('text',{x:v[2]+4,y:v[3]+2,class:'c-tag'},OBJ[4].tag));}
+    var mk=document.getElementById('auto-marks');mk.innerHTML='';
+    if(state.step>=4&&state.res){
+      state.res.clashes.forEach(function(c){
+        var x1=Math.max(c.a.bb[0],c.b.bb[0]),x2=Math.min(c.a.bb[2],c.b.bb[2]),y1=Math.max(c.a.bb[1],c.b.bb[1]),y2=Math.min(c.a.bb[3],c.b.bb[3]);
+        mk.appendChild(el('circle',{cx:(x1+x2)/2,cy:(y1+y2)/2,r:c.opened?11:20,class:c.opened?'a-open':'a-clash'}));
+      });
+    }
+  }
+  function drawAutoSteps(){
+    var ol=document.getElementById('auto-steps');ol.innerHTML='';
+    STEPS.forEach(function(s,i){
+      var li=document.createElement('li');li.dataset.state=state.step>i?'done':(state.running&&state.step===i?'run':'todo');
+      var b=document.createElement('b');b.textContent=s[isFr()?0:1];var sp=document.createElement('span');sp.textContent=s[isFr()?2:3];
+      li.appendChild(b);li.appendChild(sp);ol.appendChild(li);
+    });
+  }
+  function drawAutoTable(){
+    var tb=document.querySelector('#auto-table tbody');tb.innerHTML='';
+    var rows=state.res?state.res.rows:OBJ.map(function(o){return {o:o};});
+    rows.forEach(function(r){
+      var o=r.o,tr=document.createElement('tr');
+      var showGeo=state.step>=2,showCross=state.step>=3;
+      var geo=showGeo?(r.geo.length?r.geo.map(roomLbl).join(' + '):T('pas de position','no position')):'…';
+      var code=showCross?(r.code?roomLbl(r.code):T('absent du repère','not in tag')):'…';
+      var res='…',lot=showCross?r.lot.replace('R','R-'):'…';
+      if(showCross){
+        res={ok:T('Cohérent','Consistent'),fill:T('Local complété : '+roomLbl(r.final),'Room filled in: '+roomLbl(r.final)),fix:T('Incohérence : attribut '+roomLbl(r.attr)+' corrigé en '+roomLbl(r.final)+' (2 sources sur 3)','Inconsistent: attribute '+roomLbl(r.attr)+' corrected to '+roomLbl(r.final)+' (2 sources out of 3)'),span:T('Traverse le voile entre 2 locaux','Crosses the wall between 2 rooms'),match:T('Local déduit par correspondance avec '+r.mate+' (même ligne 207) : '+roomLbl(r.final),'Room deduced by matching with '+r.mate+' (same line 207): '+roomLbl(r.final)),none:T('Impossible à localiser : à traiter par un humain','Cannot be located: needs a human')}[r.how];
+        tr.className='t-'+r.tone;
+      }
+      [o.tag,DISC[o.disc][isFr()?0:1],fmtX(o.bb),o.attr?roomLbl(o.attr):'—',geo,code,lot,res].forEach(function(c,j){var td=document.createElement('td');td.textContent=c;if(j===7)td.className='res';tr.appendChild(td);});
+      tb.appendChild(tr);
+    });
+  }
+  function drawAutoClashes(){
+    var ol=document.getElementById('auto-clashes');ol.innerHTML='';
+    if(state.step<4||!state.res)return;
+    state.res.clashes.forEach(function(c){
+      var li=document.createElement('li');var b=document.createElement('b');var s=document.createElement('span');
+      var pair=DISC[c.a.disc][isFr()?0:1]+' × '+DISC[c.b.disc][isFr()?0:1];
+      if(c.opened){li.className='ok';b.textContent=T('Pas un conflit','Not a clash')+' · '+pair;s.textContent=T(c.a.tag+' traverse '+c.b.tag+' par une réservation prévue : le script l’écarte.',c.a.tag+' passes through '+c.b.tag+' via a planned opening: the script discards it.');}
+      else{b.textContent=T('Conflit','Clash')+' · '+pair;s.textContent=T(c.a.tag+' et '+c.b.tag+' occupent le même volume, sans réservation.',c.a.tag+' and '+c.b.tag+' occupy the same volume, with no opening.');}
+      li.appendChild(b);li.appendChild(s);ol.appendChild(li);
+    });
+  }
+  function drawAutoSummary(){
+    var s=document.getElementById('auto-summary');s.innerHTML='<b></b><span></span>';
+    if(state.step<4){s.dataset.tone='';s.querySelector('b').textContent=state.running?T('Analyse en cours…','Analysis running…'):T('Prêt','Ready');s.querySelector('span').textContent=T('Cliquez sur « Lancer l’analyse » et suivez les étapes.','Click “Run the analysis” and follow the steps.');return;}
+    var rows=state.res.rows,real=state.res.clashes.filter(function(c){return !c.opened;}).length;
+    var filled=rows.filter(function(r){return r.how==='fill'||r.how==='match';}).length,fixed=rows.filter(function(r){return r.how==='fix';}).length;
+    s.dataset.tone='warn';
+    s.querySelector('b').textContent=T(real+' conflits, comme dans le module A3',real+' clashes, as in module A3');
+    s.querySelector('span').textContent=T(filled+' locaux complétés, dont 1 par correspondance · '+fixed+' incohérence corrigée · 1 fausse alerte écartée grâce aux réservations · objets rangés en '+new Set(rows.map(function(r){return r.lot;})).size+' lots.',filled+' rooms filled in, 1 of them by matching · '+fixed+' inconsistency corrected · 1 false alarm discarded thanks to openings · objects sorted into '+new Set(rows.map(function(r){return r.lot;})).size+' work packages.');
+  }
+  function drawAuto(){drawAutoScene();drawAutoSteps();drawAutoTable();drawAutoClashes();drawAutoSummary();}
+  document.getElementById('auto-run').addEventListener('click',function(){
+    if(state.running)return;var btn=this;btn.disabled=true;
+    state={step:0,res:analyse(),running:true};drawAuto();
+    var d=reduce?0:900;
+    function next(){state.step++;if(state.step>=4)state.running=false;drawAuto();if(state.step<4)setTimeout(next,d);else btn.disabled=false;}
+    setTimeout(next,d);
+  });
+  document.getElementById('auto-reset').addEventListener('click',function(){state={step:0,res:null,running:false};drawAuto();});
+  rerender.push(drawAuto);
+
+  /* ---------- Lexique ---------- */
+  // [id, groupe, terme FR, terme EN, définition FR, définition EN, utilité FR, utilité EN, référence FR, référence EN, motifs FR, motifs EN]
+  var LEX=[
+    ['manivelle','meca','Manivelle','Crank','Bras qui tourne autour d’un axe fixe.','An arm that rotates around a fixed pin.','Transforme l’effort de l’opérateur (ici une clé à pipe) en rotation et entraîne la bielle.','Turns the operator’s effort (here a socket wrench) into rotation and drives the connecting rod.','Système bielle-manivelle : tout cours de cinématique.','Slider-crank mechanism: any kinematics textbook.',['manivelle'],['crank']],
+    ['bielle','meca','Bielle','Connecting rod','Barre articulée à ses deux extrémités, qui relie deux pièces mobiles.','A bar pinned at both ends that links two moving parts.','Transmet l’effort de la manivelle à la plateforme à roulettes et transforme la rotation en translation.','Passes the crank’s effort to the castor platform and turns rotation into straight-line motion.','Système bielle-manivelle : tout cours de cinématique.','Slider-crank mechanism: any kinematics textbook.',['bielle'],['connecting rod']],
+    ['point-mort','meca','Point mort','Dead centre','Position où la manivelle et la bielle sont alignées.','The position where crank and connecting rod are in line.','À cet endroit, la charge ne fait plus tourner la manivelle. Le dépasser légèrement permet de verrouiller sans verrou ni ressort.','Here the load no longer turns the crank. Going slightly past it locks the mechanism with no latch or spring.','Principe de la genouillère (verrouillage « over-centre »).','Toggle or over-centre locking principle.',['point mort'],['dead centre']],
+    ['butee','meca','Butée','End stop','Pièce fixe qui limite la course d’une pièce mobile.','A fixed part that limits the travel of a moving part.','Empêche la manivelle d’aller plus loin une fois le point mort dépassé : c’est elle qui tient la position.','Stops the crank once past dead centre: it is what holds the position.','Conception mécanique : guidages et arrêts.','Mechanical design: guides and stops.',['butée'],['stop']],
+    ['touret','meca','Touret à meuler','Bench grinder','Machine d’atelier équipée de deux meules qui tournent.','A workshop machine with two spinning grinding wheels.','Sert à affûter et ébavurer des pièces. Mon projet de fin d’études le rendait déplaçable.','Used to sharpen and deburr parts. My final-year project made it movable.','Directive Machines 2006/42/CE, remplacée par le règlement (UE) 2023/1230 à partir de janvier 2027.','Machinery Directive 2006/42/EC, replaced by Regulation (EU) 2023/1230 from January 2027.',['touret'],['grinder']],
+    ['palan','levage','Palan','Hoist','Appareil qui lève une charge avec un câble ou une chaîne et un crochet, souvent fixé à une poutre.','A device that lifts a load with a rope or chain and a hook, often hung from a beam.','Lever et déplacer les équipements lourds, notamment pendant la maintenance.','Lifts and moves heavy equipment, especially during maintenance.','EN 14492-2 (palans motorisés).','EN 14492-2 (power-driven hoists).',['palan'],['hoist']],
+    ['capacite','levage','Capacité nominale (CMU)','Rated capacity (WLL)','Charge maximale qu’un appareil peut lever en service, inscrite dessus.','The maximum load a device may lift in service, marked on it.','C’est la limite à ne jamais dépasser, accessoires de levage compris.','The limit never to exceed, lifting accessories included.','En France : arrêté du 1er mars 2004 sur les vérifications des appareils de levage.','In France: decree of 1 March 2004 on lifting equipment inspections.',['capacité nominale'],['rated capacity']],
+    ['elingue','levage','Élingue','Sling','Câble, chaîne ou sangle qui relie la charge au crochet.','A rope, chain or strap linking the load to the hook.','Accroche et équilibre la charge. Son poids s’ajoute à celui de la charge.','Attaches and balances the load. Its weight adds to the load.','EN 13414 (élingues en câble), EN 1492 (élingues textiles).','EN 13414 (wire rope slings), EN 1492 (textile slings).',['élingues','élingue','élingage'],['slings','sling','rigging']],
+    ['palonnier','levage','Palonnier','Lifting beam','Poutre suspendue au crochet, avec plusieurs points d’accrochage.','A beam hung from the hook with several attachment points.','Répartit la charge sur plusieurs points et évite d’abîmer les pièces longues.','Spreads the load over several points and protects long parts.','EN 13155 (accessoires de levage amovibles).','EN 13155 (non-fixed load lifting attachments).',['palonnier'],['lifting beam']],
+    ['manille','levage','Manille','Shackle','Pièce métallique en forme de U fermée par un axe.','A U-shaped metal link closed by a pin.','Relie entre eux les élingues, le crochet et les points de levage.','Connects slings, hook and lifting points.','EN 13889 (manilles en acier forgé).','EN 13889 (forged steel shackles).',['manilles','manille'],['shackles','shackle']],
+    ['hsc','levage','Hauteur sous crochet','Height under hook','Distance entre le sol et le crochet en position haute.','Distance from the floor to the hook at its highest position.','Fixe jusqu’où on peut lever : elle doit dépasser la hauteur de la charge, de l’élingage et de la garde.','Sets how high you can lift: it must exceed the load, rigging and clearance heights.','Données constructeur du palan et plans du local.','Hoist manufacturer data and room drawings.',['hauteur sous crochet'],['height under hook']],
+    ['garde','levage','Garde','Clearance','Marge de sécurité laissée entre deux éléments.','A safety margin left between two items.','Évite qu’une charge en mouvement touche un obstacle (tuyauterie, structure).','Prevents a moving load from hitting an obstacle (pipes, structure).','Règles d’installation propres à chaque projet.','Installation rules specific to each project.',['garde'],['clearance']],
+    ['gc','install','Génie civil','Civil works','Discipline du béton : murs, dalles, fondations.','The concrete discipline: walls, slabs, foundations.','Définit les locaux et les ouvertures dans lesquels les autres disciplines s’installent.','Defines the rooms and openings in which the other disciplines fit.','Eurocode 2 (EN 1992) pour le calcul des structures en béton.','Eurocode 2 (EN 1992) for concrete structure design.',['génie civil'],['civil works']],
+    ['voile','install','Voile','Concrete wall','Mur en béton armé, souvent porteur.','A reinforced concrete wall, often load-bearing.','Sépare et délimite les locaux. On ne le traverse qu’avec une réservation prévue.','Separates and bounds rooms. It is only crossed through a planned opening.','Eurocode 2 (EN 1992).','Eurocode 2 (EN 1992).',['voile'],['wall']],
+    ['reservation','install','Réservation','Planned opening','Ouverture prévue à l’avance dans un mur ou une dalle.','An opening planned in advance in a wall or slab.','Laisse passer câbles, gaines ou tuyauteries sans percer après coup un ouvrage déjà coulé.','Lets cables, ducts or pipes through without drilling a finished structure.','Synthèse des réservations entre génie civil et autres disciplines.','Opening coordination between civil works and other disciplines.',['réservation','réservations'],['opening','openings']],
+    ['local','install','Local','Room','Espace fermé du bâtiment, identifié par un code (ex. R-102).','An enclosed space in the building, identified by a code (e.g. R-102).','Sert d’adresse : chaque équipement est rattaché au local où il se trouve.','Acts as an address: each item is attached to the room it sits in.','Repérage des locaux défini par chaque projet.','Room numbering defined by each project.',['local','locaux'],['room','rooms']],
+    ['cdc','install','Chemin de câbles','Cable tray','Support métallique en gouttière qui porte les câbles électriques.','A metal trough that carries electrical cables.','Guide et protège les câbles sur tout leur parcours.','Guides and protects cables along their route.','IEC 61537 (systèmes de chemins de câbles).','IEC 61537 (cable tray systems).',['chemin de câbles','chemins de câbles'],['cable tray','cable trays']],
+    ['hvac','install','HVAC (CVC)','HVAC','Chauffage, ventilation et climatisation (en français : CVC).','Heating, ventilation and air conditioning.','Renouvelle et traite l’air des locaux. Dans le nucléaire, la ventilation participe aussi au confinement.','Renews and treats room air. In nuclear plants, ventilation also helps with containment.','EN 16798 (ventilation des bâtiments).','EN 16798 (ventilation of buildings).',['HVAC'],['HVAC']],
+    ['gaine','install','Gaine','Duct','Conduit, souvent en tôle, dans lequel circule l’air.','A conduit, often sheet metal, that carries air.','Transporte l’air entre les ventilateurs et les locaux.','Carries air between fans and rooms.','EN 1505 (gaines rectangulaires en tôle).','EN 1505 (rectangular sheet metal ducts).',['gaine'],['duct']],
+    ['tuyauterie','install','Tuyauterie','Piping','Ensemble des tubes, coudes et raccords qui transportent des fluides.','The pipes, bends and fittings that carry fluids.','Achemine eau, vapeur, air comprimé ou produits entre les équipements.','Carries water, steam, compressed air or products between equipment.','Symboles des schémas de procédé : ISO 10628-2.','Process diagram symbols: ISO 10628-2.',['tuyauterie','tuyauteries'],['piping','pipes']],
+    ['ligne','install','Ligne','Line','Tronçon de tuyauterie repéré par un numéro.','A stretch of piping identified by a number.','Son numéro relie tous les éléments d’un même circuit : tubes, vannes, supports.','Its number ties together all parts of one circuit: pipes, valves, supports.','Schémas P&ID du projet.','The project’s P&ID diagrams.',['ligne'],['line']],
+    ['vanne','install','Vanne','Valve','Organe qui ouvre, ferme ou règle le passage d’un fluide.','A device that opens, closes or regulates a fluid flow.','Doit rester accessible pour être manœuvrée et entretenue.','Must stay accessible to be operated and maintained.','Symboles : ISO 10628-2.','Symbols: ISO 10628-2.',['vanne'],['valve']],
+    ['support','install','Support','Support','Pièce qui fixe une tuyauterie ou un câble à la structure.','A part that fixes a pipe or cable to the structure.','Reprend le poids et les efforts. Souvent listé dans les nomenclatures plutôt que modélisé finement.','Carries weight and loads. Often listed in bills of quantities rather than modelled in detail.','Plans d’assemblage et nomenclatures (BOQ).','Assembly drawings and bills of quantities (BOQ).',['support'],['support']],
+    ['charpente','install','Charpente métallique','Steelwork','Structures en acier : poutres, poteaux, plateformes.','Steel structures: beams, columns, platforms.','Porte les équipements et donne accès aux zones de maintenance.','Carries equipment and gives access to maintenance areas.','Eurocode 3 (EN 1993).','Eurocode 3 (EN 1993).',['charpente'],['steelwork']],
+    ['plateforme','install','Plateforme','Platform','Plancher métallique surélevé, avec garde-corps.','A raised steel floor with guardrails.','Donne accès aux vannes et équipements en hauteur.','Gives access to valves and equipment at height.','EN ISO 14122-2 (plateformes et passerelles).','EN ISO 14122-2 (platforms and walkways).',['plateforme'],['platform']],
+    ['coupe','install','Coupe','Section view','Vue obtenue en « tranchant » virtuellement l’installation par un plan.','A view obtained by virtually slicing the installation with a plane.','Montre ce qui se superpose et qui resterait caché sur une vue de dessus.','Shows what overlaps and would stay hidden in a plan view.','ISO 128 (représentation des dessins techniques).','ISO 128 (technical drawing presentation).',['coupe'],['section view']],
+    ['calque','install','Calque','Layer','Couche d’un dessin qui regroupe les éléments d’une même discipline.','A drawing layer grouping the items of one discipline.','Permet d’afficher ou de masquer un métier pour lire le plan.','Lets you show or hide one trade to read the drawing.','Logiciels de CAO et DAO.','CAD software.',['calques','calque'],['layers','layer']],
+    ['conflit','install','Conflit (interférence)','Clash','Deux objets qui occupent le même volume dans la maquette.','Two objects occupying the same volume in the model.','À détecter pendant les études : sur le chantier, la correction coûte beaucoup plus cher.','To be caught during design: on site, fixing it costs far more.','Détection d’interférences (Navisworks, E3D…).','Clash detection (Navisworks, E3D…).',['conflits','conflit'],['clashes','clash']],
+    ['maquette','data','Maquette 3D','3D model','Représentation numérique en trois dimensions de toute l’installation.','A digital 3D representation of the whole installation.','Chaque discipline y place ses objets. On y vérifie les interfaces avant de construire.','Each discipline places its objects in it. Interfaces are checked before building.','Format d’échange IFC : ISO 16739.','IFC exchange format: ISO 16739.',['maquette 3D','maquette'],['3D model']],
+    ['e3d','data','AVEVA E3D','AVEVA E3D','Logiciel de conception 3D d’installations industrielles.','Software for 3D design of industrial plants.','Modéliser tuyauteries, équipements et structures, puis produire les plans.','Models piping, equipment and structures, then produces drawings.','Éditeur : AVEVA.','Publisher: AVEVA.',['E3D'],['E3D']],
+    ['export','data','Export','Export','Extraction des données de la maquette vers un fichier, souvent un tableau.','Data extracted from the model into a file, often a table.','Permet de traiter les données hors du logiciel, par exemple avec un script.','Lets you process data outside the software, for example with a script.','Formats courants : CSV, Excel, IFC.','Common formats: CSV, Excel, IFC.',['export'],['export']],
+    ['attribut','data','Attribut','Attribute','Information attachée à un objet : local, masse, matériau…','Information attached to an object: room, mass, material…','Fait de la maquette une base de données, et pas seulement un dessin.','Turns the model into a database, not just a drawing.','Propriétés d’objet des logiciels de CAO.','Object properties in CAD software.',['attribut','attributs'],['attribute','attributes']],
+    ['repere','data','Repère (codification)','Tag (coding)','Code unique qui identifie un objet.','A unique code identifying an object.','Sa construction (bâtiment, local, discipline, numéro) donne des informations par la simple lecture du nom.','Its structure (building, room, discipline, number) gives information just by reading the name.','Principes de désignation : IEC 81346. Codification propre à chaque projet.','Designation principles: IEC 81346. Coding specific to each project.',['repère','repères','codification'],['tag','tags','coding']],
+    ['lot','data','Lot','Work package','Groupe d’objets traités ensemble, par exemple même local et même discipline.','A group of objects handled together, e.g. same room and same discipline.','Répartit le travail, les achats et le suivi.','Splits work, purchasing and tracking.','Découpage du projet (WBS).','Project breakdown (WBS).',['lot','lots'],['work package','work packages']],
+    ['script','data','Script','Script','Petit programme qui enchaîne des opérations automatiquement.','A small program that runs a sequence of operations automatically.','Applique les mêmes règles à des milliers d’objets, sans fatigue ni oubli.','Applies the same rules to thousands of objects, without tiredness or omissions.','Exemples : PML pour E3D, Python.','Examples: PML for E3D, Python.',['script'],['script']]
+  ];
+  var GROUPS={meca:['Mécanique','Mechanics'],levage:['Levage','Lifting'],install:['Installation et disciplines','Plant and disciplines'],data:['Données et maquette 3D','Data and 3D models']};
+  var LEXBY={};LEX.forEach(function(e){LEXBY[e[0]]=e;});
+  function drawLexique(){
+    var box=document.getElementById('lex-list');if(!box)return;box.innerHTML='';
+    var q=(document.getElementById('lex-filter').value||'').trim().toLowerCase();
+    var fr=isFr(),n=0;
+    Object.keys(GROUPS).forEach(function(g){
+      var items=LEX.filter(function(e){return e[1]===g;}).filter(function(e){return !q||(e[2]+' '+e[3]+' '+e[4]+' '+e[5]).toLowerCase().indexOf(q)>=0;});
+      if(!items.length)return;
+      var h=document.createElement('h3');h.className='lex-group';h.textContent=GROUPS[g][fr?0:1];box.appendChild(h);
+      var grid=document.createElement('div');grid.className='lex-grid';
+      items.sort(function(a,b){return (fr?a[2]:a[3]).localeCompare(fr?b[2]:b[3],fr?'fr':'en');}).forEach(function(e){
+        n++;var d=document.createElement('article');d.className='lex-entry';d.id='lex-'+e[0];
+        var t=document.createElement('h4');t.textContent=fr?e[2]:e[3];var tr=document.createElement('span');tr.className='lex-tr';tr.textContent=(fr?'EN : ':'FR: ')+(fr?e[3]:e[2]);t.appendChild(tr);
+        var p=document.createElement('p');p.textContent=fr?e[4]:e[5];
+        var u=document.createElement('p');u.innerHTML='<b></b> ';u.querySelector('b').textContent=fr?'À quoi ça sert :':'What it is for:';u.appendChild(document.createTextNode(fr?e[6]:e[7]));
+        var r=document.createElement('p');r.className='lex-ref';r.innerHTML='<b></b> ';r.querySelector('b').textContent=fr?'Pour approfondir :':'Further reading:';r.appendChild(document.createTextNode(fr?e[8]:e[9]));
+        d.appendChild(t);d.appendChild(p);d.appendChild(u);d.appendChild(r);grid.appendChild(d);
+      });
+      box.appendChild(grid);
+    });
+    document.getElementById('lex-count').textContent=n+(fr?' termes':' terms');
+  }
+  document.getElementById('lex-filter').addEventListener('input',drawLexique);
+  rerender.push(drawLexique);
+
+  /* mots cliquables */
+  function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+  var SKIP='svg,button,a,h1,h2,h3,h4,th,td,input,textarea,select,.mono,.chip,.lex,.codif-part,.at-readout,#term-pop';
+  function langOf(el){while(el&&el!==root){if(el.classList&&el.classList.contains('fr'))return 'fr';if(el.classList&&el.classList.contains('en'))return 'en';el=el.parentElement;}return null;}
+  function wrapTerms(scope,done){
+    done=done||{fr:{},en:{}};
+    scope.querySelectorAll('a.term').forEach(function(t){var lg=langOf(t);var Ls=lg?[lg]:['fr','en'];Ls.forEach(function(L){done[L][t.dataset.term]=true;});});
+    var walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
+      if(!n.nodeValue.trim())return NodeFilter.FILTER_REJECT;
+      var p=n.parentElement;if(!p||p.closest(SKIP))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;}});
+    var nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(function(node){
+      var lang=langOf(node.parentElement);
+      var langs=lang?[lang]:['fr','en'];
+      langs.forEach(function(L){
+        if(!node.parentNode)return;
+        var best=null;
+        LEX.forEach(function(e){
+          if(done[L][e[0]])return;
+          (L==='fr'?e[10]:e[11]).forEach(function(w){
+            var re=new RegExp('(?<![\\p{L}\\d])'+esc(w)+'(?![\\p{L}\\d])','iu');var m=re.exec(node.nodeValue);
+            if(m&&(!best||m.index<best.i||(m.index===best.i&&m[0].length>best.len)))best={i:m.index,len:m[0].length,id:e[0]};
+          });
+        });
+        if(!best)return;
+        done[L][best.id]=true;
+        var after=node.splitText(best.i);var rest=after.splitText(best.len);
+        var a=document.createElement('a');a.className='term';a.href='#lex-'+best.id;a.dataset.term=best.id;a.textContent=after.nodeValue;
+        after.parentNode.replaceChild(a,after);
+        // continuer sur le reste du texte
+        if(rest.nodeValue.trim()){var tmp={fr:done.fr,en:done.en};wrapRest(rest,L,tmp);}
+      });
+    });
+    return done;
+  }
+  function wrapRest(node,L,done){
+    var best=null;
+    LEX.forEach(function(e){if(done[L][e[0]])return;(L==='fr'?e[10]:e[11]).forEach(function(w){var re=new RegExp('(?<![\\p{L}\\d])'+esc(w)+'(?![\\p{L}\\d])','iu');var m=re.exec(node.nodeValue);if(m&&(!best||m.index<best.i))best={i:m.index,len:m[0].length,id:e[0]};});});
+    if(!best)return;done[L][best.id]=true;
+    var after=node.splitText(best.i);var rest=after.splitText(best.len);
+    var a=document.createElement('a');a.className='term';a.href='#lex-'+best.id;a.dataset.term=best.id;a.textContent=after.nodeValue;after.parentNode.replaceChild(a,after);
+    if(rest.nodeValue.trim())wrapRest(rest,L,done);
+  }
+  var pop=document.getElementById('term-pop');
+  function showPop(a){
+    var e=LEXBY[a.dataset.term];if(!e)return;var fr=isFr();
+    pop.innerHTML='<b></b><span></span><em></em>';pop.querySelector('b').textContent=fr?e[2]:e[3];pop.querySelector('span').textContent=fr?e[4]:e[5];pop.querySelector('em').textContent=fr?'Cliquez pour le lexique complet':'Click for the full glossary';
+    pop.hidden=false;var r=a.getBoundingClientRect();var w=Math.min(300,window.innerWidth-24);pop.style.width=w+'px';
+    var left=Math.max(12,Math.min(window.innerWidth-w-12,r.left+window.scrollX));pop.style.left=left+'px';pop.style.top=(r.bottom+window.scrollY+6)+'px';
+  }
+  function hidePop(){pop.hidden=true;}
+  document.addEventListener('mouseover',function(ev){var a=ev.target.closest&&ev.target.closest('a.term');if(a)showPop(a);});
+  document.addEventListener('mouseout',function(ev){var a=ev.target.closest&&ev.target.closest('a.term');if(a)hidePop();});
+  document.addEventListener('focusin',function(ev){if(ev.target.matches&&ev.target.matches('a.term'))showPop(ev.target);});
+  document.addEventListener('focusout',function(ev){if(ev.target.matches&&ev.target.matches('a.term'))hidePop();});
+  document.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('a.term');if(a){hidePop();var f=document.getElementById('lex-filter');if(f&&f.value){f.value='';drawLexique();}}});
+  function wrapStatic(){document.querySelectorAll('.at-hero, section.folio').forEach(function(s){wrapTerms(s);});}
+  function wrapDynamic(){['lift-story','lift-checks','clash-found','auto-clashes','auto-steps','mech-state','lift-verdict','auto-summary'].forEach(function(id){var el2=document.getElementById(id);if(el2)wrapTerms(el2);});}
+
+  var _dl=drawLift;drawLift=function(){_dl();wrapDynamic();};
+  var _dc=drawClash;drawClash=function(){_dc();wrapDynamic();};
+  var _da=drawAuto;drawAuto=function(){_da();wrapDynamic();};
+  var _dm=drawMech;drawMech=function(){_dm();wrapDynamic();};
+  rerender.push(wrapDynamic);
+
+  /* init */
+  wrapStatic();
+  var h=(location.hash||'').slice(1);
+  setLang(h==='fr'||h==='en'?h:(saved||(nav.indexOf('fr')===0?'fr':'en')));
+  loadPreset(0);
+  drawLexique();
+  wrapDynamic();
+})();
+</script>
+<script data-goatcounter="https://pedy99.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<button class="totop" type="button" aria-label="Haut de page / Back to top">↑</button>
+<script>
+(function(){var h=document.querySelector('header.bar'),b=h&&h.querySelector('.menu-btn');if(!b)return;
+function set(o){h.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false');b.querySelector('.ic').textContent=o?'✕':'☰';}
+b.addEventListener('click',function(){set(!h.classList.contains('open'));});
+h.querySelectorAll('nav.links a').forEach(function(a){a.addEventListener('click',function(){set(false);});});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false);});
+var t=document.querySelector('.totop');addEventListener('scroll',function(){t.classList.toggle('show',scrollY>700);},{passive:true});
+t.addEventListener('click',function(){scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>
