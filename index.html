@@ -226,6 +226,12 @@ table.status td:first-child{font-family:var(--mono);font-size:.82rem;white-space
 .contact-form .send-message{border:1px solid var(--paper);border-radius:4px;background:var(--paper);color:var(--ink);font:600 .95rem var(--body);padding:11px 22px;cursor:pointer}
 .contact-form .send-message:hover{opacity:.87}
 .contact-form .form-footnote{font-size:.8rem;margin:10px 0 0}
+.contact-form .form-status{margin-top:16px;padding:13px 16px;border-radius:5px;font-size:.95rem;line-height:1.5;border:1px solid var(--paper)}
+.contact-form .form-status[hidden]{display:none}
+.contact-form .form-status[data-state="success"]{border-color:#80caa0;color:#d9f8e5;background:#163c2c}
+.contact-form .form-status[data-state="error"]{border-color:#e4a8a8;color:#ffe4e4;background:#502929}
+.contact-form .send-message:disabled{opacity:.55;cursor:wait}
+
 .contact-form .hp-field{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
 @media (max-width:600px){.contact-form .form-grid{grid-template-columns:1fr}}
 
@@ -758,8 +764,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
       </div>
       <label class="form-consent"><input type="checkbox" name="consent_to_contact" value="yes" required><span><span class="en">I agree to share these details with Pierre Sylva through Formspree so he can reply to my enquiry. *</span><span class="fr">J'accepte de transmettre ces informations à Pierre Sylva via Formspree afin qu'il puisse répondre à mon message. *</span></span></label>
       <button class="send-message" type="submit"><span class="en">Send message</span><span class="fr">Envoyer le message</span></button>
-      <p class="form-footnote en">Required fields are marked *. After sending, Formspree displays a confirmation page. You can also email me directly using the address above.</p>
-      <p class="form-footnote fr">Les champs * sont obligatoires. Après l'envoi, Formspree affiche une page de confirmation. Vous pouvez aussi m'écrire directement à l'adresse ci-dessus.</p>
+      <div class="form-status" id="contact-status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <p class="form-footnote en">Required fields are marked *. A confirmation appears here when the message is accepted. You can also email me directly using the address above.</p>
+      <p class="form-footnote fr">Les champs * sont obligatoires. Une confirmation apparaît ici lorsque le message est accepté. Vous pouvez également m'écrire directement à l'adresse ci-dessus.</p>
     </form>
   </div>
 </section>
@@ -793,6 +800,56 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     var orig=b.innerHTML;
     try{navigator.clipboard.writeText(b.dataset.copy).then(function(){b.textContent='✓';setTimeout(function(){b.innerHTML=orig},1400)},function(){})}catch(e){}
   })});
+  var contactForm=document.querySelector('form.contact-form');
+  if(contactForm){
+    var status=document.getElementById('contact-status');
+    var submitButton=contactForm.querySelector('button[type="submit"]');
+    var isSending=false;
+    function showStatus(kind,english,french){
+      status.hidden=false;
+      status.dataset.state=kind;
+      status.innerHTML='<span class="en"></span><span class="fr"></span>';
+      status.querySelector('.en').textContent=english;
+      status.querySelector('.fr').textContent=french;
+    }
+    contactForm.addEventListener('submit',async function(event){
+      event.preventDefault();
+      if(isSending||!contactForm.reportValidity())return;
+      isSending=true;
+      submitButton.disabled=true;
+      status.hidden=true;
+      var buttonOriginal=submitButton.innerHTML;
+      submitButton.textContent=root.classList.contains('fr')?'Envoi en cours…':'Sending…';
+      try{
+        var response=await fetch(contactForm.action,{
+          method:'POST',
+          body:new FormData(contactForm),
+          headers:{'Accept':'application/json'}
+        });
+        if(!response.ok){
+          var details='';
+          try{
+            var data=await response.json();
+            if(Array.isArray(data.errors))details=data.errors.map(function(e){return e.message||''}).filter(Boolean).join('; ');
+          }catch(ignore){}
+          throw new Error(details||'HTTP '+response.status);
+        }
+        contactForm.reset();
+        showStatus('success',
+          'Your message has been sent successfully. Thank you! I will reply to your email.',
+          'Votre message a bien été envoyé. Merci ! Je vous répondrai par email.');
+        status.scrollIntoView({behavior:'smooth',block:'nearest'});
+      }catch(error){
+        showStatus('error',
+          'The message could not be sent. Your entries are still here. Please try again or use the email link above.',
+          "L'envoi du message a échoué. Vos informations sont conservées. Réessayez ou utilisez le lien email ci-dessus.");
+      }finally{
+        isSending=false;
+        submitButton.disabled=false;
+        submitButton.innerHTML=buttonOriginal;
+      }
+    });
+  }
 })();
 </script>
 </body>
